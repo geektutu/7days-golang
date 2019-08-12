@@ -5,21 +5,19 @@ import (
 )
 
 type node struct {
-	path     string
+	pattern  string
 	part     string
 	children []*node
 	isWild   bool
-	handler  HandlerFunc
 }
 
 func (n *node) String() string {
-	return fmt.Sprintf("node{path=%s, part=%s, isWild=%t}", n.path, n.part, n.isWild)
+	return fmt.Sprintf("node{pattern=%s, part=%s, isWild=%t}", n.pattern, n.part, n.isWild)
 }
 
-func (n *node) insert(path string, parts []string, handler HandlerFunc, height int) {
+func (n *node) insert(pattern string, parts []string, height int) {
 	if len(parts) == height {
-		n.path = path
-		n.handler = handler
+		n.pattern = pattern
 		return
 	}
 
@@ -29,12 +27,12 @@ func (n *node) insert(path string, parts []string, handler HandlerFunc, height i
 		child = &node{part: part, isWild: part[0] == ':'}
 		n.children = append(n.children, child)
 	}
-	child.insert(path, parts, handler, height+1)
+	child.insert(pattern, parts, height+1)
 }
 
 func (n *node) search(parts []string, height int) *node {
 	if len(parts) == height {
-		if n.path == "" {
+		if n.pattern == "" {
 			return nil
 		}
 		return n
@@ -54,7 +52,7 @@ func (n *node) search(parts []string, height int) *node {
 }
 
 func (n *node) travel(list *([]*node)) {
-	if n.path != "" {
+	if n.pattern != "" {
 		*list = append(*list, n)
 	}
 	for _, child := range n.children {

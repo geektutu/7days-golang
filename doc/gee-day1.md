@@ -18,7 +18,7 @@ github: https://github.com/geektutu/7days-gee-golang-web
 本文是 [7天用Go从零实现Web框架Gee教程系列](https://geektutu.com/post/gee.html)的第一篇。
 
 - 简单介绍`net/http`库以及`http.Handler`接口。
-- 搭建`Gee`框架的雏形，**代码约40行**。
+- 搭建`Gee`框架的雏形，**代码约50行**。
 
 ## 标准库启动Web服务
 
@@ -115,11 +115,11 @@ func main() {
 }
 ```
 
-我们定义了一个空的结构体`Engine`，实现了方法`ServeHTTP`。这个方法有2个参数，第二个参数是 _Request_ ，该对象包含了该HTTP请求的所有的信息，比如请求地址、Header和Body等信息；第一个参数是 _ResponseWriter_ ，利用 _ResponseWriter_ 可以构造针对该请求的响应。
+- 我们定义了一个空的结构体`Engine`，实现了方法`ServeHTTP`。这个方法有2个参数，第二个参数是 _Request_ ，该对象包含了该HTTP请求的所有的信息，比如请求地址、Header和Body等信息；第一个参数是 _ResponseWriter_ ，利用 _ResponseWriter_ 可以构造针对该请求的响应。
 
-在 _main_ 函数中，我们给 _ListenAndServe_ 方法的第二个参数传入了刚才创建的`engine`实例。至此，我们走出了实现Web框架的第一步，即，将所有的HTTP请求转向了我们自己的处理逻辑。还记得吗，在实现`Engine`之前，我们调用 _http.HandleFunc_ 实现了路由和Handler的映射，也就是只能针对具体的路由写处理逻辑。比如`/hello`。但是在实现`Engine`之后，我们拦截了所有的HTTP请求，拥有了统一的控制入口。在这里我们可以自由定义路由映射的规则，也可以统一添加一些处理逻辑，例如日志、异常处理等。
+- 在 _main_ 函数中，我们给 _ListenAndServe_ 方法的第二个参数传入了刚才创建的`engine`实例。至此，我们走出了实现Web框架的第一步，即，将所有的HTTP请求转向了我们自己的处理逻辑。还记得吗，在实现`Engine`之前，我们调用 _http.HandleFunc_ 实现了路由和Handler的映射，也就是只能针对具体的路由写处理逻辑。比如`/hello`。但是在实现`Engine`之后，我们拦截了所有的HTTP请求，拥有了统一的控制入口。在这里我们可以自由定义路由映射的规则，也可以统一添加一些处理逻辑，例如日志、异常处理等。
 
-代码的运行结果与之前的是一致的。
+- 代码的运行结果与之前的是一致的。
 
 ## Gee框架的雏形
 
@@ -190,9 +190,19 @@ func New() *Engine {
 	return &Engine{router: make(map[string]HandlerFunc)}
 }
 
+func (engine *Engine) addRoute(method string, pattern string, handler HandlerFunc) {
+	key := method + "-" + pattern
+	engine.router[key] = handler
+}
+
 // GET defines the method to add GET request
 func (engine *Engine) GET(pattern string, handler HandlerFunc) {
-	engine.router[pattern] = handler
+	engine.addRoute("GET", pattern, handler)
+}
+
+// POST defines the method to add POST request
+func (engine *Engine) POST(pattern string, handler HandlerFunc) {
+	engine.addRoute("POST", pattern, handler)
 }
 
 // Run defines the method to start a http server
@@ -201,7 +211,8 @@ func (engine *Engine) Run(addr string) (err error) {
 }
 
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	if handler, ok := engine.router[req.URL.Path]; ok {
+	key := req.Method + "-" + req.URL.Path
+	if handler, ok := engine.router[key]; ok {
 		handler(w, req)
 	} else {
 		fmt.Fprintf(w, "404 NOT FOUND: %s\n", req.URL)
@@ -211,9 +222,9 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 那么`gee.go`就是重头戏了。我们重点介绍一下这部分的实现。
 
-- 首先定义了类型`HandlerFunc`，这是提供给框架用户的，用来定义路由映射的处理方法。我们在`Engine`中，添加了一张路由映射表`router`，key 是静态路由地址，例如`/`和`/hello`，value 是用户映射的处理方法。
+- 首先定义了类型`HandlerFunc`，这是提供给框架用户的，用来定义路由映射的处理方法。我们在`Engine`中，添加了一张路由映射表`router`，key 由请求方法和静态路由地址构成，例如`GET-/`、`GET-/hello`、`POST-/hello`，这样针对相同的路由，如果请求方法不同,可以映射不同的处理方法(Handler)，value 是用户映射的处理方法。
 
-- 当用户调用`(*Engine).GET()`方法时，会将路由和处理方法注册到映射表 _router_ 中，`(*Engine).RUN()`方法，只是 _ListenAndServe_ 的包装。
+- 当用户调用`(*Engine).GET()`方法时，会将路由和处理方法注册到映射表 _router_ 中，`(*Engine).Run()`方法，是 _ListenAndServe_ 的包装。
 
 - `Engine`实现的 _ServeHTTP_ 方法的作用就是，解析请求的路径，查找路由映射表，如果查到，就执行注册的处理方法。如果查不到，就返回 _404 NOT FOUND_ 。
 
