@@ -14,7 +14,7 @@ package main
 
 // (3)
 // $ curl "http://localhost:9999/hello/geektutu"
-// hello , you're at /hello/geektutu
+// hello geektutu, you're at /hello/geektutu
 
 // (4)
 // $ curl "http://localhost:9999/login" -X POST -d 'username=geektutu&password=1234'

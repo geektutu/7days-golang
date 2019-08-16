@@ -12,7 +12,7 @@ keywords:
 - 动手写
 - from scratch
 image: post/gee/gee.jpg
-github: https://github.com/geektutu/7days-gee-golang-web
+github: https://github.com/geektutu/7days-golang
 ---
 
 ![gee](gee/gee.jpg)
@@ -58,15 +58,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 时间关系，同时为了尽可能地简洁明了，这个框架中的很多部分实现的功能都很简单，但是尽可能地体现一个框架核心的设计原则。例如`Router`的设计，虽然支持的动态路由规则有限，但为了性能考虑匹配算法是用`Trie树`实现的，`Router`最重要的指标之一便是性能。
 
-希望这个教程能够对你有所启发，如果对 Gee 有任何好的建议，欢迎提[issues - Github](https://github.com/geektutu/7days-gee-golang-web/issues) 和 PR。教程中的任何问题，可以直接在文章末尾评论。
+希望这个教程能够对你有所启发，如果对 Gee 有任何好的建议，欢迎提[issues - Github](https://github.com/geektutu/7days-golang/issues) 和 PR。教程中的任何问题，可以直接在文章末尾评论。
 
 ## 目录
 
-- [第一天：前置知识(http.Handler接口)](https://geektutu.com/post/gee-day1.html)，[Code - Github](https://github.com/geektutu/7days-gee-golang-web/tree/master/day1-http-base)
-- 第二天：Tire树实现路由(Router)
-- 第三天：设计Context
-- 第四天：支持模板(HTML Template)
-- 第五天：支持中间件(Middleware)
-- 第六天：简单鉴权(BASIC AUTH)
+- [第一天：前置知识(http.Handler接口)](https://geektutu.com/post/gee-day1.html)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day1-http-base)
+- 第二天：Context上下文设计，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day2-context)
+- 第三天：Tire树路由(Router)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day3-router)
+- 第四天：分组控制(Group)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day4-group)
+- 第五天：中间件(Middleware)
+- 第六天：HTML模板(Template)
 - 第七天：异常错误处理(Panic)
-

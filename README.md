@@ -1,6 +1,8 @@
-# # 7天用Go从零实现Web框架Gee
+# 7天用Go从零实现Web框架Gee
 
 ![Gee](doc/gee/gee.jpg)
+
+Gee 的设计与实现参考了Gin，这个教程可以快速入门：[Go Gin简明教程](https://geektutu.com/post/quick-go-gin.html)。
 
 ## [教程目录](https://geektutu.com/post/gee.html)
 
@@ -8,7 +10,7 @@
 - 第二天：Context上下文设计，[Code - Github](day2-context)
 - 第三天：Tire树路由(Router)，[Code - Github](day3-router)
 - 第四天：分组控制(Group)，[Code - Github](day4-group)
-- 第五天：中间件(Middleware)
+- 第五天：中间件(Middleware)，[Code - Github](day5-middleware)
 - 第六天：HTML模板(Template)
 - 第七天：异常错误处理(Panic)
 
@@ -115,6 +117,40 @@ func main() {
 			})
 		})
 
+	}
+
+	r.Run(":9999")
+}
+```
+
+## Day 5 - Middleware
+
+```go
+func onlyForV2() gee.HandlerFunc {
+	return func(c *gee.Context) {
+		// Start timer
+		t := time.Now()
+		// Process request
+		c.Next()
+		// Calculate resolution time
+		log.Printf("[%d] %s in %v for group v2", c.StatusCode, c.Req.RequestURI, time.Since(t))
+	}
+}
+
+func main() {
+	r := gee.New()
+	r.Use(gee.Logger()) // global midlleware
+	r.GET("/", func(c *gee.Context) {
+		c.HTML(http.StatusOK, "<h1>Hello Gee</h1>")
+	})
+
+	v2 := r.Group("/v2")
+	v2.Use(onlyForV2()) // v2 group middleware
+	{
+		v2.GET("/hello/:name", func(c *gee.Context) {
+			// expect /hello/geektutu
+			c.String(http.StatusOK, "hello %s, you're at %s\n", c.Param("name"), c.Path)
+		})
 	}
 
 	r.Run(":9999")

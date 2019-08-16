@@ -7,20 +7,24 @@ import (
 )
 
 type Context struct {
-	Path   string
-	Method string
+	// origin objects
 	Writer http.ResponseWriter
 	Req    *http.Request
+	// request info
+	Path   string
+	Method string
 	Params map[string]string
+	// response info
+	StatusCode int
 }
 
 func newContext(w http.ResponseWriter, req *http.Request, params map[string]string) *Context {
 	return &Context{
+		Writer: w,
+		Req:    req,
 		Path:   req.URL.Path,
 		Method: req.Method,
-		Params: make(map[string]string),
-		Req:    req,
-		Writer: w,
+		Params: params,
 	}
 }
 
@@ -38,6 +42,7 @@ func (c *Context) Query(key string) string {
 }
 
 func (c *Context) Status(code int) {
+	c.StatusCode = code
 	c.Writer.WriteHeader(code)
 }
 
@@ -52,13 +57,13 @@ func (c *Context) String(code int, format string, values ...interface{}) {
 }
 
 func (c *Context) HTML(code int, html string) {
-	c.Writer.WriteHeader(code)
+	c.Status(code)
 	c.SetHeader("Content-Type", "text/html")
 	c.Writer.Write([]byte(html))
 }
 
 func (c *Context) JSON(code int, obj interface{}) {
-	c.Writer.WriteHeader(code)
+	c.Status(code)
 	c.SetHeader("Content-Type", "application/json")
 	encoder := json.NewEncoder(c.Writer)
 	if err := encoder.Encode(obj); err != nil {
@@ -67,6 +72,6 @@ func (c *Context) JSON(code int, obj interface{}) {
 }
 
 func (c *Context) Data(code int, data []byte) {
-	c.Writer.WriteHeader(code)
+	c.Status(code)
 	c.Writer.Write(data)
 }
