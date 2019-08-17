@@ -11,7 +11,7 @@ Gee 的设计与实现参考了Gin，这个教程可以快速入门：[Go Gin简
 - 第三天：Tire树路由(Router)，[Code - Github](day3-router)
 - 第四天：分组控制(Group)，[Code - Github](day4-group)
 - 第五天：中间件(Middleware)，[Code - Github](day5-middleware)
-- 第六天：HTML模板(Template)
+- 第六天：HTML模板(Template)，[Code - Github](day6-template)
 - 第七天：异常错误处理(Panic)
 
 
@@ -152,6 +152,51 @@ func main() {
 			c.String(http.StatusOK, "hello %s, you're at %s\n", c.Param("name"), c.Path)
 		})
 	}
+
+	r.Run(":9999")
+}
+```
+
+## Day 6 - HTML Template
+
+```go
+type student struct {
+	Name string
+	Age  int8
+}
+
+func formatAsDate(t time.Time) string {
+	year, month, day := t.Date()
+	return fmt.Sprintf("%d-%02d-%02d", year, month, day)
+}
+
+func main() {
+	r := gee.New()
+	r.Use(gee.Logger())
+	r.SetFuncMap(template.FuncMap{
+		"formatAsDate": formatAsDate,
+	})
+	r.LoadHTMLGlob("templates/*")
+	r.Static("/assets", "./static")
+
+	stu1 := &student{Name: "Geektutu", Age: 20}
+	stu2 := &student{Name: "Jack", Age: 22}
+	r.GET("/", func(c *gee.Context) {
+		c.HTML(http.StatusOK, "css.tmpl", nil)
+	})
+	r.GET("/students", func(c *gee.Context) {
+		c.HTML(http.StatusOK, "arr.tmpl", gee.H{
+			"title":  "gee",
+			"stuArr": [2]*student{stu1, stu2},
+		})
+	})
+
+	r.GET("/date", func(c *gee.Context) {
+		c.HTML(http.StatusOK, "custom_func.tmpl", gee.H{
+			"title": "gee",
+			"now":   time.Date(2019, 8, 17, 0, 0, 0, 0, time.UTC),
+		})
+	})
 
 	r.Run(":9999")
 }

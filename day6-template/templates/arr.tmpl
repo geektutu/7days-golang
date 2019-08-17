@@ -1,0 +1,9 @@
+<!-- templates/arr.tmpl -->
+<html>
+<body>
+    <p>hello, {{.title}}</p>
+    {{range $index, $ele := .stuArr }}
+    <p>{{ $index }}: {{ $ele.Name }} is {{ $ele.Age }} years old</p>
+    {{ end }}
+</body>
+</html>

@@ -1,13 +1,23 @@
 package main
 
-// (1) global middleware Logger
-// $ curl -i http://localhost:9999/
-// 2019/08/17 01:37:38 [200] / in 3.14µs
+/*
+(1) global middleware Logger
+$ curl http://localhost:9999/
+<h1>Hello Gee</h1>
 
-// (2) global + group middleware
-// $ curl http://localhost:9999/v2/hello/geektutu
-// 2019/08/17 01:38:48 [200] /v2/hello/geektutu in 61.467µs for group v2
-// 2019/08/17 01:38:48 [200] /v2/hello/geektutu in 281µs
+>>> log
+2019/08/17 01:37:38 [200] / in 3.14µs
+*/
+
+/*
+(2) global + group middleware
+$ curl http://localhost:9999/v2/hello/geektutu
+{"message":"Internal Server Error"}
+
+>>> log
+2019/08/17 01:38:48 [200] /v2/hello/geektutu in 61.467µs for group v2
+2019/08/17 01:38:48 [200] /v2/hello/geektutu in 281µs
+*/
 
 import (
 	"log"
@@ -21,8 +31,8 @@ func onlyForV2() gee.HandlerFunc {
 	return func(c *gee.Context) {
 		// Start timer
 		t := time.Now()
-		// Process request
-		c.Next()
+		// if a server error occurred
+		c.Fail(500, "Internal Server Error")
 		// Calculate resolution time
 		log.Printf("[%d] %s in %v for group v2", c.StatusCode, c.Req.RequestURI, time.Since(t))
 	}

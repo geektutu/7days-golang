@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+type H map[string]interface{}
+
 type Context struct {
 	// origin objects
 	Writer http.ResponseWriter
@@ -18,13 +20,12 @@ type Context struct {
 	StatusCode int
 }
 
-func newContext(w http.ResponseWriter, req *http.Request, params map[string]string) *Context {
+func newContext(w http.ResponseWriter, req *http.Request) *Context {
 	return &Context{
 		Writer: w,
 		Req:    req,
 		Path:   req.URL.Path,
 		Method: req.Method,
-		Params: params,
 	}
 }
 
@@ -56,12 +57,6 @@ func (c *Context) String(code int, format string, values ...interface{}) {
 	c.Writer.Write([]byte(fmt.Sprintf(format, values...)))
 }
 
-func (c *Context) HTML(code int, html string) {
-	c.Status(code)
-	c.SetHeader("Content-Type", "text/html")
-	c.Writer.Write([]byte(html))
-}
-
 func (c *Context) JSON(code int, obj interface{}) {
 	c.Status(code)
 	c.SetHeader("Content-Type", "application/json")
@@ -74,4 +69,10 @@ func (c *Context) JSON(code int, obj interface{}) {
 func (c *Context) Data(code int, data []byte) {
 	c.Status(code)
 	c.Writer.Write(data)
+}
+
+func (c *Context) HTML(code int, html string) {
+	c.Status(code)
+	c.SetHeader("Content-Type", "text/html")
+	c.Writer.Write([]byte(html))
 }

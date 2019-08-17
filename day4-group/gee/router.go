@@ -28,10 +28,10 @@ func (r *router) addRoute(method string, pattern string, handler HandlerFunc) {
 	r.handlers[key] = handler
 }
 
-func (r *router) handle(w http.ResponseWriter, req *http.Request) {
-	n, params := r.getRoute(req.Method, req.URL.Path)
-	c := newContext(w, req, params)
+func (r *router) handle(c *Context) {
+	n, params := r.getRoute(c.Method, c.Path)
 	if n != nil {
+		c.Params = params
 		key := c.Method + "-" + n.pattern
 		r.handlers[key](c)
 	} else {
