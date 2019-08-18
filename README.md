@@ -77,11 +77,8 @@ func main() {
 		c.String(http.StatusOK, "hello %s, you're at %s\n", c.Param("name"), c.Path)
 	})
 
-	r.POST("/login", func(c *gee.Context) {
-		c.JSON(http.StatusOK, &map[string]string{
-			"username": c.PostForm("username"),
-			"password": c.PostForm("password"),
-		})
+	r.GET("/assets/*filepath", func(c *gee.Context) {
+		c.JSON(http.StatusOK, gee.H{"filepath": c.Param("filepath")})
 	})
 
 	r.Run(":9999")
@@ -130,8 +127,8 @@ func onlyForV2() gee.HandlerFunc {
 	return func(c *gee.Context) {
 		// Start timer
 		t := time.Now()
-		// Process request
-		c.Next()
+		// if a server error occurred
+		c.Fail(500, "Internal Server Error")
 		// Calculate resolution time
 		log.Printf("[%d] %s in %v for group v2", c.StatusCode, c.Req.RequestURI, time.Since(t))
 	}
@@ -200,4 +197,23 @@ func main() {
 
 	r.Run(":9999")
 }
+```
+
+## Day 7 - Panic Recover
+
+```go
+func main() {
+	r := gee.Default()
+	r.GET("/", func(c *gee.Context) {
+		c.String(http.StatusOK, "Hello Geektutu\n")
+	})
+	// index out of range for testing Recovery()
+	r.GET("/panic", func(c *gee.Context) {
+		names := []string{"geektutu"}
+		c.String(http.StatusOK, names[100])
+	})
+
+	r.Run(":9999")
+}
+
 ```
