@@ -17,8 +17,25 @@ func newRouter() *router {
 	}
 }
 
+// Only one * is allowed
+func parsePattern(pattern string) []string {
+	vs := strings.Split(pattern, "/")
+
+	parts := make([]string, 0)
+	for _, item := range vs {
+		if item != "" {
+			parts = append(parts, item)
+			if item[0] == '*' {
+				break
+			}
+		}
+	}
+	return parts
+}
+
 func (r *router) addRoute(method string, pattern string, handler HandlerFunc) {
-	parts := filterNonEmpty(strings.Split(pattern, "/"))
+	parts := parsePattern(pattern)
+
 	key := method + "-" + pattern
 	_, ok := r.roots[method]
 	if !ok {
@@ -28,19 +45,8 @@ func (r *router) addRoute(method string, pattern string, handler HandlerFunc) {
 	r.handlers[key] = handler
 }
 
-func (r *router) handle(c *Context) {
-	n, params := r.getRoute(c.Method, c.Path)
-	if n != nil {
-		c.Params = params
-		key := c.Method + "-" + n.pattern
-		r.handlers[key](c)
-	} else {
-		c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
-	}
-}
-
-func (r *router) getRoute(method string, pattern string) (*node, map[string]string) {
-	searchParts := filterNonEmpty(strings.Split(pattern, "/"))
+func (r *router) getRoute(method string, path string) (*node, map[string]string) {
+	searchParts := parsePattern(path)
 	params := make(map[string]string)
 	root, ok := r.roots[method]
 
@@ -51,10 +57,14 @@ func (r *router) getRoute(method string, pattern string) (*node, map[string]stri
 	n := root.search(searchParts, 0)
 
 	if n != nil {
-		parts := filterNonEmpty(strings.Split(n.pattern, "/"))
+		parts := parsePattern(n.pattern)
 		for index, part := range parts {
 			if part[0] == ':' {
 				params[part[1:]] = searchParts[index]
+			}
+			if part[0] == '*' && len(part) > 1 {
+				params[part[1:]] = strings.Join(searchParts[index:], "/")
+				break
 			}
 		}
 		return n, params
@@ -73,12 +83,13 @@ func (r *router) getRoutes(method string) []*node {
 	return nodes
 }
 
-func filterNonEmpty(vs []string) []string {
-	parts := make([]string, 0)
-	for _, item := range vs {
-		if item != "" {
-			parts = append(parts, item)
-		}
+func (r *router) handle(c *Context) {
+	n, params := r.getRoute(c.Method, c.Path)
+	if n != nil {
+		c.Params = params
+		key := c.Method + "-" + n.pattern
+		r.handlers[key](c)
+	} else {
+		c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
 	}
-	return parts
 }

@@ -2,6 +2,7 @@ package gee
 
 import (
 	"fmt"
+	"strings"
 )
 
 type node struct {
@@ -24,14 +25,14 @@ func (n *node) insert(pattern string, parts []string, height int) {
 	part := parts[height]
 	child := n.matchChild(part)
 	if child == nil {
-		child = &node{part: part, isWild: part[0] == ':'}
+		child = &node{part: part, isWild: part[0] == ':' || part[0] == '*'}
 		n.children = append(n.children, child)
 	}
 	child.insert(pattern, parts, height+1)
 }
 
 func (n *node) search(parts []string, height int) *node {
-	if len(parts) == height {
+	if len(parts) == height || strings.HasPrefix(n.part, "*") {
 		if n.pattern == "" {
 			return nil
 		}

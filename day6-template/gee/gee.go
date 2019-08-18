@@ -24,7 +24,7 @@ type (
 		router        *router
 		groups        []*RouterGroup     // store all group
 		htmlTemplates *template.Template // for html render
-		funcMap       template.FuncMap
+		funcMap       template.FuncMap   // for html render
 	}
 )
 
@@ -89,7 +89,7 @@ func (group *RouterGroup) createStaticHandler(relativePath string, fs http.FileS
 // serve static files
 func (group *RouterGroup) Static(relativePath string, root string) {
 	handler := group.createStaticHandler(relativePath, http.Dir(root))
-	urlPattern := path.Join(relativePath, "/:filepath")
+	urlPattern := path.Join(relativePath, "/*filepath")
 	// Register GET handlers
 	group.GET(urlPattern, handler)
 }
