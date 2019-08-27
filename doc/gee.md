@@ -64,7 +64,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 - [第一天：前置知识(http.Handler接口)](https://geektutu.com/post/gee-day1.html)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day1-http-base)
 - [第二天：上下文设计(Context)](https://geektutu.com/post/gee-day2.html)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day2-context)
-- 第三天：Tire树路由(Router)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day3-router)
+- [第三天：Tire树路由(Router)](https://geektutu.com/post/gee-day3.html)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day3-router)
 - 第四天：分组控制(Group)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day4-group)
 - 第五天：中间件(Middleware)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day5-middleware)
 - 第六天：HTML模板(Template)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day6-template)
