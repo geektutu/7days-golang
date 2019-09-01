@@ -1,7 +1,15 @@
 package main
 
 /*
-(1) v1
+(1) index
+curl -i http://localhost:9999/index
+HTTP/1.1 200 OK
+Date: Sun, 01 Sep 2019 08:12:23 GMT
+Content-Length: 19
+Content-Type: text/html; charset=utf-8
+<h1>Index Page</h1>
+
+(2) v1
 $ curl -i http://localhost:9999/v1/
 HTTP/1.1 200 OK
 Date: Mon, 12 Aug 2019 18:11:07 GMT
@@ -9,19 +17,19 @@ Content-Length: 18
 Content-Type: text/html; charset=utf-8
 <h1>Hello Gee</h1>
 
-(2)
+(3)
 $ curl "http://localhost:9999/v1/hello?name=geektutu"
 hello geektutu, you're at /v1/hello
 
-(3)
+(4)
 $ curl "http://localhost:9999/v2/hello/geektutu"
 hello geektutu, you're at /hello/geektutu
 
-(4)
+(5)
 $ curl "http://localhost:9999/v2/login" -X POST -d 'username=geektutu&password=1234'
 {"password":"1234","username":"geektutu"}
 
-(5)
+(6)
 $ curl "http://localhost:9999/hello"
 404 NOT FOUND: /hello
 */
@@ -34,6 +42,9 @@ import (
 
 func main() {
 	r := gee.New()
+	r.GET("/index", func(c *gee.Context) {
+		c.HTML(http.StatusOK, "<h1>Index Page</h1>")
+	})
 	v1 := r.Group("/v1")
 	{
 		v1.GET("/", func(c *gee.Context) {

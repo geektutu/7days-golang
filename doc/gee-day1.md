@@ -1,7 +1,7 @@
 ---
 title: Go语言动手写Web框架 - Gee第一天 http.Handler
 date: 2019-08-12 00:10:10
-description: 7天用 Go语言 从零实现Web框架教程(7 days implement golang web framework from scratch tutorial)，用 Go语言/golang 动手写Web框架，从零实现一个Web框架，从零设计一个Web框架。本文介绍了Go标准库 net/http 和 http.Handler 接口的使用，拦截所有的 HTTP 请求，交给Gee框架处理。
+description: 7天用 Go语言 从零实现Web框架教程(7 days implement golang web framework from scratch tutorial)，用 Go语言/golang 动手写Web框架，从零实现一个Web框架，以 Gin 为原型从零设计一个Web框架。本文介绍了Go标准库 net/http 和 http.Handler 接口的使用，拦截所有的 HTTP 请求，交给Gee框架处理。
 tags:
 - Go
 categories:

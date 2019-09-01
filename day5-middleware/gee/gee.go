@@ -20,7 +20,7 @@ type (
 	Engine struct {
 		*RouterGroup
 		router *router
-		groups []*RouterGroup // store all group
+		groups []*RouterGroup // store all groups
 	}
 )
 

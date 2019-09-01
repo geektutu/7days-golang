@@ -1,7 +1,7 @@
 ---
-title: Go语言动手写Web框架 - Gee第三天 路由Router
+title: Go语言动手写Web框架 - Gee第三天 前缀树路由Router
 date: 2019-08-28 00:10:10
-description: 7天用 Go语言 从零实现Web框架教程(7 days implement golang web framework from scratch tutorial)，用 Go语言/golang 动手写Web框架，从零实现一个Web框架，从零设计一个Web框架。本文介绍了如何用 Trie 前缀树实现路由。支持简单的参数解析和通配符的场景。
+description: 7天用 Go语言 从零实现Web框架教程(7 days implement golang web framework from scratch tutorial)，用 Go语言/golang 动手写Web框架，从零实现一个Web框架，以 Gin 为原型从零设计一个Web框架。本文介绍了如何用 Trie 前缀树实现路由 Route。支持简单的参数解析和通配符的场景。
 tags:
 - Go
 categories:
@@ -14,6 +14,11 @@ keywords:
 image: post/gee-day3/trie_router.jpg
 github: https://github.com/geektutu/7days-golang
 ---
+
+本文是 [7天用Go从零实现Web框架Gee教程系列](https://geektutu.com/post/gee.html)的第三篇。
+
+- 使用 Tire 树实现动态路由(dynamic route)解析。
+- 支持两种模式`:name`和`*filepath`，**代码约150行**。
 
 ## Trie 树简介
 

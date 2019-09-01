@@ -22,7 +22,7 @@ type (
 	Engine struct {
 		*RouterGroup
 		router        *router
-		groups        []*RouterGroup     // store all group
+		groups        []*RouterGroup     // store all groups
 		htmlTemplates *template.Template // for html render
 		funcMap       template.FuncMap   // for html render
 	}

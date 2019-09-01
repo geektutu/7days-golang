@@ -1,7 +1,7 @@
 ---
 title: 7天用Go从零实现Web框架Gee教程
 date: 2019-08-11 02:10:10
-description: 7天用 Go语言 从零实现Web框架教程(7 days implement golang web framework from scratch tutorial)，用 Go语言/golang 动手写Web框架，从零实现一个Web框架，从零设计一个Web框架
+description: 7天用 Go语言 从零实现Web框架教程(7 days implement golang web framework from scratch tutorial)，用 Go语言/golang 动手写Web框架，从零实现一个Web框架，以 Gin 为原型从零设计一个Web框架。
 tags:
 - Go
 categories:
@@ -65,7 +65,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 - [第一天：前置知识(http.Handler接口)](https://geektutu.com/post/gee-day1.html)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day1-http-base)
 - [第二天：上下文设计(Context)](https://geektutu.com/post/gee-day2.html)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day2-context)
 - [第三天：Tire树路由(Router)](https://geektutu.com/post/gee-day3.html)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day3-router)
-- 第四天：分组控制(Group)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day4-group)
-- 第五天：中间件(Middleware)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day5-middleware)
+- [第四天：分组控制(Group)](https://geektutu.com/post/gee-day4.html)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day4-group)
+- [第五天：中间件(Middleware)]((https://geektutu.com/post/gee-day5.html)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day5-middleware)
 - 第六天：HTML模板(Template)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day6-template)
 - 第七天：错误恢复(Panic Recover)，[Code - Github](https://github.com/geektutu/7days-golang/tree/master/day7-panic-recover)
