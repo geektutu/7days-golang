@@ -45,7 +45,7 @@ func (group *RouterGroup) Group(prefix string) *RouterGroup {
 }
 
 func (group *RouterGroup) addRoute(method string, comp string, handler HandlerFunc) {
-	pattern := group.prefix + comp
+	pattern := getNestPrefix(group.parent, group.prefix) + comp
 	group.engine.router.addRoute(method, pattern, handler)
 }
 
@@ -67,4 +67,12 @@ func (engine *Engine) Run(addr string) (err error) {
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	c := newContext(w, req)
 	engine.router.handle(c)
+}
+
+func getNestPrefix(group *RouterGroup, p string) string {
+	p = strings.Join([]string{group.prefix, p}, "")
+	if group.parent == nil {
+		return p
+	}
+	return getNestPrefix(group.parent, p)
 }
