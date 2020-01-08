@@ -256,7 +256,7 @@ $ curl "http://localhost:9999"
 Hello Geektutu
 ```
 
-我们可以在后台日志中看到如下内容，引发错误的原因和堆栈信息都被打印了出来，通过日志，我们可以很容易地知道，在*day7-panic-recover/main.go:20* 的地方出现了 `index out of range` 错误。
+我们可以在后台日志中看到如下内容，引发错误的原因和堆栈信息都被打印了出来，通过日志，我们可以很容易地知道，在*day7-panic-recover/main.go:47* 的地方出现了 `index out of range` 错误。
 
 ```bash
 2020/01/09 01:00:10 Route  GET - /
@@ -266,14 +266,14 @@ Hello Geektutu
 Traceback:
         /usr/local/Cellar/go/1.12.5/libexec/src/runtime/panic.go:523
         /usr/local/Cellar/go/1.12.5/libexec/src/runtime/panic.go:44
-        /Users/gzdaijie/Github/blog/geektutu-blog/posts/7days-golang/day7-panic-recover/main.go:47
-        /Users/gzdaijie/Github/blog/geektutu-blog/posts/7days-golang/day7-panic-recover/gee/context.go:41
-        /Users/gzdaijie/Github/blog/geektutu-blog/posts/7days-golang/day7-panic-recover/gee/recovery.go:37
-        /Users/gzdaijie/Github/blog/geektutu-blog/posts/7days-golang/day7-panic-recover/gee/context.go:41
-        /Users/gzdaijie/Github/blog/geektutu-blog/posts/7days-golang/day7-panic-recover/gee/logger.go:15
-        /Users/gzdaijie/Github/blog/geektutu-blog/posts/7days-golang/day7-panic-recover/gee/context.go:41
-        /Users/gzdaijie/Github/blog/geektutu-blog/posts/7days-golang/day7-panic-recover/gee/router.go:99
-        /Users/gzdaijie/Github/blog/geektutu-blog/posts/7days-golang/day7-panic-recover/gee/gee.go:130
+        /tmp/7days-golang/day7-panic-recover/main.go:47
+        /tmp/7days-golang/day7-panic-recover/gee/context.go:41
+        /tmp/7days-golang/day7-panic-recover/gee/recovery.go:37
+        /tmp/7days-golang/day7-panic-recover/gee/context.go:41
+        /tmp/7days-golang/day7-panic-recover/gee/logger.go:15
+        /tmp/7days-golang/day7-panic-recover/gee/context.go:41
+        /tmp/7days-golang/day7-panic-recover/gee/router.go:99
+        /tmp/7days-golang/day7-panic-recover/gee/gee.go:130
         /usr/local/Cellar/go/1.12.5/libexec/src/net/http/server.go:2775
         /usr/local/Cellar/go/1.12.5/libexec/src/net/http/server.go:1879
         /usr/local/Cellar/go/1.12.5/libexec/src/runtime/asm_amd64.s:1338
