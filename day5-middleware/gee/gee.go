@@ -1,6 +1,7 @@
 package gee
 
 import (
+	"log"
 	"net/http"
 	"strings"
 )
@@ -37,7 +38,7 @@ func New() *Engine {
 func (group *RouterGroup) Group(prefix string) *RouterGroup {
 	engine := group.engine
 	newGroup := &RouterGroup{
-		prefix: group.prefix + prefix,
+		prefix: prefix,
 		parent: group,
 		engine: engine,
 	}
@@ -51,9 +52,18 @@ func (group *RouterGroup) Use(middlewares ...HandlerFunc) {
 }
 
 func (group *RouterGroup) addRoute(method string, comp string, handler HandlerFunc) {
-	pattern := group.prefix + comp
-
+	pattern := group.getNestPrefix() + comp
+	log.Printf("Route %4s - %s", method, pattern)
 	group.engine.router.addRoute(method, pattern, handler)
+}
+
+// Support group nesting
+func (group *RouterGroup) getNestPrefix() string {
+	p := group.prefix
+	if group.parent == nil {
+		return p
+	}
+	return group.parent.getNestPrefix() + p
 }
 
 // GET defines the method to add GET request

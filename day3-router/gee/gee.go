@@ -1,6 +1,7 @@
 package gee
 
 import (
+	"log"
 	"net/http"
 )
 
@@ -18,6 +19,7 @@ func New() *Engine {
 }
 
 func (engine *Engine) addRoute(method string, pattern string, handler HandlerFunc) {
+	log.Printf("Route %4s - %s", method, pattern)
 	engine.router.addRoute(method, pattern, handler)
 }
 

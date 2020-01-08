@@ -17,20 +17,11 @@ func newTestRouter() *router {
 }
 
 func TestParsePattern(t *testing.T) {
-	testCases := [][]string{
-		parsePattern("/p/:name"),
-		parsePattern("/p/*"),
-		parsePattern("/p/*name/*"),
-	}
-	wants := [][]string{
-		[]string{"p", ":name"},
-		[]string{"p", "*"},
-		[]string{"p", "*name"},
-	}
-	for index, result := range testCases {
-		if reflect.DeepEqual(result, wants[index]) {
-			t.Fatal("test parsePattern failed")
-		}
+	ok := reflect.DeepEqual(parsePattern("/p/:name"), []string{"p", ":name"})
+	ok = ok && reflect.DeepEqual(parsePattern("/p/*"), []string{"p", "*"})
+	ok = ok && reflect.DeepEqual(parsePattern("/p/*name/*"), []string{"p", "*name"})
+	if !ok {
+		t.Fatal("test parsePattern failed")
 	}
 }
 
@@ -79,24 +70,5 @@ func TestGetRoutes(t *testing.T) {
 
 	if len(nodes) != 5 {
 		t.Fatal("the number of routes shoule be 4")
-	}
-}
-
-func TestNestingGroup(t *testing.T) {
-	r := &RouterGroup{
-		prefix:      "/v1",
-		middleWares: nil,
-		engine:      nil,
-		parent:      nil,
-	}
-	r2 := &RouterGroup{
-		prefix:      "/v2",
-		middleWares: nil,
-		engine:      nil,
-		parent:      r,
-	}
-	res := getNestPrefix(r2, "/hello")
-	if res != "/v1/v2/hello" {
-		t.Fatal("match failed")
 	}
 }
