@@ -42,7 +42,7 @@ func New() *Engine {
 func (group *RouterGroup) Group(prefix string) *RouterGroup {
 	engine := group.engine
 	newGroup := &RouterGroup{
-		prefix: prefix,
+		prefix: group.prefix + prefix,
 		parent: group,
 		engine: engine,
 	}
@@ -56,18 +56,9 @@ func (group *RouterGroup) Use(middlewares ...HandlerFunc) {
 }
 
 func (group *RouterGroup) addRoute(method string, comp string, handler HandlerFunc) {
-	pattern := group.getNestPrefix() + comp
+	pattern := group.prefix + comp
 	log.Printf("Route %4s - %s", method, pattern)
 	group.engine.router.addRoute(method, pattern, handler)
-}
-
-// Support group nesting
-func (group *RouterGroup) getNestPrefix() string {
-	p := group.prefix
-	if group.parent == nil {
-		return p
-	}
-	return group.parent.getNestPrefix() + p
 }
 
 // GET defines the method to add GET request
