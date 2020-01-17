@@ -2,6 +2,9 @@
 
 ![Gee](doc/gee/gee.jpg)
 
+
+如果是 Go 语言的初学者，推荐先阅读 [Go 语言简明教程](https://geektutu.com/post/quick-golang.html)。
+
 Gee 的设计与实现参考了Gin，这个教程可以快速入门：[Go Gin简明教程](https://geektutu.com/post/quick-go-gin.html)。
 
 ## [教程目录](https://geektutu.com/post/gee.html)
