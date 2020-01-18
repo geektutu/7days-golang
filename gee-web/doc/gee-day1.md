@@ -24,7 +24,7 @@ github: https://github.com/geektutu/7days-golang
 
 Go语言内置了 `net/http`库，封装了HTTP网络编程的基础的接口，我们实现的`Gee` Web 框架便是基于`net/http`的。我们接下来通过一个例子，简单介绍下这个库的使用。
 
-**[day1-http-base/base1/main.go](https://github.com/geektutu/7days-golang/tree/master/day1-http-base/base1)**
+**[day1-http-base/base1/main.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day1-http-base/base1)**
 
 ```go
 package main
@@ -82,7 +82,7 @@ func ListenAndServe(address string, h Handler) error
 
 第二个参数的类型是什么呢？通过查看`net/http`的源码可以发现，`Handler`是一个接口，需要实现方法 _ServeHTTP_ ，也就是说，只要传入任何实现了 _ServerHTTP_ 接口的实例，所有的HTTP请求，就都交给了该实例处理了。马上来试一试吧。
 
-**[day1-http-base/base2/main.go](https://github.com/geektutu/7days-golang/tree/master/day1-http-base/base2)**
+**[day1-http-base/base2/main.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day1-http-base/base2)**
 
 ```go
 package main
@@ -135,7 +135,7 @@ main.go
 
 ### main.go
 
-**[day1-http-base/base3/main.go](https://github.com/geektutu/7days-golang/tree/master/day1-http-base/base3)**
+**[day1-http-base/base3/main.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day1-http-base/base3)**
 
 ```go
 package main
@@ -167,7 +167,7 @@ func main() {
 
 ### gee.go
 
-**[day1-http-base/base3/gee/gee.go](https://github.com/geektutu/7days-golang/tree/master/day1-http-base/base3)**
+**[day1-http-base/base3/gee/gee.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day1-http-base/base3)**
 
 ```go
 package gee

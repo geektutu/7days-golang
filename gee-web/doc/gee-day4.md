@@ -49,7 +49,7 @@ v1.GET("/", func(c *gee.Context) {
 
 所以，最后的 Group 的定义是这样的：
 
-**[day4-group/gee/gee.go](https://github.com/geektutu/7days-golang/tree/master/day4-group/gee)**
+**[day4-group/gee/gee.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day4-group/gee)**
 
 ```go
 RouterGroup struct {

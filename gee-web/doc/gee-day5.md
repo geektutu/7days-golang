@@ -33,7 +33,7 @@ github: https://github.com/geektutu/7days-golang
 
 Gee 的中间件的定义与路由映射的 Handler 一致，处理的输入是`Context`对象。插入点是框架接收到请求初始化`Context`对象后，允许用户使用自己定义的中间件做一些额外的处理，例如记录日志等，以及对`Context`进行二次加工。另外通过调用`(*Context).Next()`函数，中间件可等待用户自己定义的 `Handler`处理结束后，再做一些额外的操作，例如计算本次处理所用时间等。即 Gee 的中间件支持用户在请求被处理的前后，做一些额外的操作。举个例子，我们希望最终能够支持如下定义的中间件，`c.Next()`表示等待执行其他的中间件或用户的`Handler`：
 
-****[day4-group/gee/logger.go](https://github.com/geektutu/7days-golang/tree/master/day5-middleware/gee)****
+****[day4-group/gee/logger.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day5-middleware/gee)****
 
 ```go
 func Logger() HandlerFunc {
@@ -56,7 +56,7 @@ func Logger() HandlerFunc {
 
 为此，我们给`Context`添加了2个参数，定义了`Next`方法：
 
-**[day4-group/gee/context.go](https://github.com/geektutu/7days-golang/tree/master/day5-middleware/gee)**
+**[day4-group/gee/context.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day5-middleware/gee)**
 
 ```go
 type Context struct {
@@ -130,7 +130,7 @@ func B(c *Context) {
 
 - 定义`Use`函数，将中间件应用到某个 Group 。
 
-**[day4-group/gee/gee.go](https://github.com/geektutu/7days-golang/tree/master/day5-middleware/gee)**
+**[day4-group/gee/gee.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day5-middleware/gee)**
 
 ```go
 // Use is defined to add middleware to the group
@@ -155,7 +155,7 @@ ServeHTTP 函数也有变化，当我们接收到一个具体请求时，要判�
 
 - handle 函数中，将从路由匹配得到的 Handler 添加到 `c.handlers`列表中，执行`c.Next()`。
 
-**[day4-group/gee/router.go](https://github.com/geektutu/7days-golang/tree/master/day5-middleware/gee)**
+**[day4-group/gee/router.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day5-middleware/gee)**
 
 ```go
 func (r *router) handle(c *Context) {

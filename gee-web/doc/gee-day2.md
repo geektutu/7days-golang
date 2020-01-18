@@ -25,7 +25,7 @@ github: https://github.com/geektutu/7days-golang
 
 为了展示第二天的成果，我们看一看在使用时的效果。
 
-[day2-context/main.go](https://github.com/geektutu/7days-golang/tree/master/day2-context)
+[day2-context/main.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day2-context)
 
 
 ```go
@@ -90,7 +90,7 @@ c.JSON(http.StatusOK, gee.H{
 
 ### 具体实现
 
-[day2-context/gee/context.go](https://github.com/geektutu/7days-golang/tree/master/day2-context)
+[day2-context/gee/context.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day2-context)
 
 ```go
 type H map[string]interface{}
@@ -168,7 +168,7 @@ func (c *Context) HTML(code int, html string) {
 
 我们将和路由相关的方法和结构提取了出来，放到了一个新的文件中`router.go`，方便我们下一次对 router 的功能进行增强，例如提供动态路由的支持。 router 的 handle 方法作了一个细微的调整，即 handler 的参数，变成了 Context。
 
-[day2-context/gee/router.go](https://github.com/geektutu/7days-golang/tree/master/day2-context)
+[day2-context/gee/router.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day2-context)
 
 ```go
 type router struct {
@@ -197,7 +197,7 @@ func (r *router) handle(c *Context) {
 
 ## 框架入口
 
-[day2-context/gee/gee.go](https://github.com/geektutu/7days-golang/tree/master/day2-context)
+[day2-context/gee/gee.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day2-context)
 
 ```go
 // HandlerFunc defines the request handler used by gee

@@ -36,7 +36,7 @@ github: https://github.com/geektutu/7days-golang
 
 找到文件后，如何返回这一步，`net/http`库已经实现了。因此，gee 框架要做的，仅仅是解析请求的地址，映射到服务器上文件的真实地址，交给`http.FileServer`处理就好了。
 
-[day6-template/gee/gee.go](https://github.com/geektutu/7days-golang/tree/master/day6-template/gee)
+[day6-template/gee/gee.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day6-template/gee)
 
 ```go
 // create static handler
@@ -103,7 +103,7 @@ func (engine *Engine) LoadHTMLGlob(pattern string) {
 
 接下来，对原来的 `(*Context).HTML()`方法做了些小修改，使之支持根据模板文件名选择模板进行渲染。
 
-[day6-template/gee/context.go](https://github.com/geektutu/7days-golang/tree/master/day6-template/gee)
+[day6-template/gee/context.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day6-template/gee)
 
 ```go
 func (c *Context) HTML(code int, name string, data interface{}) {
@@ -140,7 +140,7 @@ func (c *Context) HTML(code int, name string, data interface{}) {
 </html>
 ```
 
-[day6-template/main.go](https://github.com/geektutu/7days-golang/tree/master/day6-template/gee)
+[day6-template/main.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day6-template/gee)
 
 ```go
 type student struct {
