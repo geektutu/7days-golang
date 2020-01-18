@@ -52,7 +52,7 @@ HTTP请求的路径恰好是由`/`分隔的多段构成的，因此，每一段�
 
 首先我们需要设计树节点上应该存储那些信息。
 
-**[day3-router/gee/trie.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day3-router/gee)**
+**[day3-router/gee/trie.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day3-router)**
 
 ```go
 type node struct {
