@@ -168,7 +168,7 @@ func Recovery() HandlerFunc {
 
 你可能注意到，这里有一个 *trace()* 函数，这个函数是用来获取触发 panic 的堆栈信息，完整代码如下：
 
-[day7-panic-recover/gee/recovery.go](https://github.com/geektutu/7days-golang/tree/master/day7-panic-recover)
+[day7-panic-recover/gee/recovery.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day7-panic-recover)
 
 ```go
 package gee
@@ -219,7 +219,7 @@ func Recovery() HandlerFunc {
 
 ## 使用 Demo
 
-[day7-panic-recover/main.go](https://github.com/geektutu/7days-golang/tree/master/day7-panic-recover)
+[day7-panic-recover/main.go](https://github.com/geektutu/7days-golang/tree/master/gee-web/day7-panic-recover)
 
 ```go
 package main
