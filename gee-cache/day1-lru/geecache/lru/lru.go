@@ -1,36 +1,40 @@
 package lru
 
-import (
-	"container/list"
-	"unsafe"
-)
+import "container/list"
 
 // Cache is a LRU cache. It is not safe for concurrent access.
 type Cache struct {
-	maxBytes int
-	nbytes   int
+	maxBytes int64
+	nbytes   int64
 	ll       *list.List
 	cache    map[string]*list.Element
 	// optional and executed when an entry is purged.
-	OnEvicted func(key string, value interface{})
+	OnEvicted func(key string, value Value)
 }
 
 type entry struct {
 	key   string
-	value interface{}
+	value Value
+}
+
+// Value is optional interface for the value
+// if it's not implemented, use unsafe.Sizeof to count
+type Value interface {
+	Len() int // count how many bytes it takes
 }
 
 // New is the Constructor of Cache
-func New(maxBytes int, onEvicted func(string, interface{})) *Cache {
+func New(maxBytes int64, onEvicted func(string, Value)) *Cache {
 	return &Cache{
-		maxBytes: maxBytes,
-		ll:       list.New(),
-		cache:    make(map[string]*list.Element),
+		maxBytes:  maxBytes,
+		ll:        list.New(),
+		cache:     make(map[string]*list.Element),
+		OnEvicted: onEvicted,
 	}
 }
 
 // Add adds a value to the cache.
-func (c *Cache) Add(key string, value interface{}) {
+func (c *Cache) Add(key string, value Value) {
 	if ele, ok := c.cache[key]; ok {
 		c.ll.MoveToFront(ele)
 		kv := ele.Value.(*entry)
@@ -39,7 +43,7 @@ func (c *Cache) Add(key string, value interface{}) {
 	}
 	ele := c.ll.PushFront(&entry{key, value})
 	c.cache[key] = ele
-	c.nbytes += len(key) + sizeof(value)
+	c.nbytes += int64(len(key)) + int64(value.Len())
 
 	for c.maxBytes != 0 && c.maxBytes < c.nbytes {
 		c.RemoveOldest()
@@ -47,7 +51,7 @@ func (c *Cache) Add(key string, value interface{}) {
 }
 
 // Get look ups a key's value
-func (c *Cache) Get(key string) (value interface{}, ok bool) {
+func (c *Cache) Get(key string) (value Value, ok bool) {
 	if ele, ok := c.cache[key]; ok {
 		c.ll.MoveToFront(ele)
 		kv := ele.Value.(*entry)
@@ -63,22 +67,14 @@ func (c *Cache) RemoveOldest() {
 		c.ll.Remove(ele)
 		kv := ele.Value.(*entry)
 		delete(c.cache, kv.key)
-		c.nbytes -= len(kv.key) + sizeof(kv.value)
+		c.nbytes -= int64(len(kv.key)) + int64(kv.value.Len())
 		if c.OnEvicted != nil {
 			c.OnEvicted(kv.key, kv.value)
 		}
 	}
 }
 
-// Value is optional interface for the value
-// if it's not implemented, use unsafe.Sizeof to count
-type Value interface {
-	Len() int // count how many bytes it takes
-}
-
-func sizeof(value interface{}) int {
-	if m, ok := value.(Value); ok {
-		return m.Len()
-	}
-	return int(unsafe.Sizeof(value))
+// Len the number of cache entries
+func (c *Cache) Len() int {
+	return c.ll.Len()
 }
