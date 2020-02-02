@@ -1,23 +1,26 @@
 package geecache
 
-import "errors"
-
+// A Group is a cache namespace and associated data loaded spread over
 type Group struct {
 	name      string
 	getter    Getter
 	mainCache cache
 }
 
-type GetterFunc func(key string, dest Sink) error
-
-func (f GetterFunc) Get(key string, dest Sink) error {
-	return f(key, dest)
-}
-
+// A Getter loads data for a key.
 type Getter interface {
-	Get(key string, dest Sink) error
+	Get(key string) ([]byte, error)
 }
 
+// A GetterFunc implements Getter with a function.
+type GetterFunc func(key string) ([]byte, error)
+
+// Get implements Getter interface function
+func (f GetterFunc) Get(key string) ([]byte, error) {
+	return f(key)
+}
+
+// NewGroup create a new instance of Group
 func NewGroup(name string, cacheBytes int64, getter Getter) *Group {
 	if getter == nil {
 		panic("nil Getter")
@@ -29,35 +32,30 @@ func NewGroup(name string, cacheBytes int64, getter Getter) *Group {
 	}
 }
 
-func (g *Group) load(key string, dest Sink) (ByteView, error) {
-	value, err := g.getLocally(key, dest)
-	if err != nil {
-		return value, err
+// Get value for a key from cache
+func (g *Group) Get(key string) (ByteView, error) {
+	if v, ok := g.mainCache.get(key); ok {
+		return v, nil
 	}
 
-	g.populateCache(key, value)
-	return value, nil
+	return g.load(key)
 }
 
-func (g *Group) getLocally(key string, dest Sink) (ByteView, error) {
-	if err := g.getter.Get(key, dest); err != nil {
-		return ByteView{}, err
+func cloneBytes(b []byte) []byte {
+	c := make([]byte, len(b))
+	copy(c, b)
+	return c
+}
+
+func (g *Group) load(key string) (value ByteView, err error) {
+	bytes, err := g.getter.Get(key)
+	if err == nil {
+		value = ByteView{cloneBytes(bytes)}
+		g.populateCache(key, value)
 	}
-	return dest.view()
+	return
 }
 
 func (g *Group) populateCache(key string, value ByteView) {
 	g.mainCache.add(key, value)
-}
-
-func (g *Group) Get(key string, dest Sink) error {
-	if dest == nil {
-		return errors.New("groupcache: nil dest Sink")
-	}
-	if v, ok := g.mainCache.get(key); ok {
-		return dest.SetBytes(v.b)
-	}
-
-	_, err := g.load(key, dest)
-	return err
 }
