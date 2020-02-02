@@ -18,11 +18,16 @@ Gee 的设计与实现参考了Gin，[Go Gin简明教程](https://geektutu.com/p
 - [第六天：HTML模板(Template)](https://geektutu.com/post/gee-day6.html)，[Code - Github](gee-web/day6-template)
 - [第七天：错误恢复(Panic Recover)](https://geektutu.com/post/gee-day7.html)，[Code - Github](gee-web/day7-panic-recover)
 
+## 7天用Go从零实现分布式缓存GeeCache
+
+- 第一天：LRU 缓存策略，[Code - Github](gee-cache/day1-lru)
+- 第二天：单节点缓存，[Code - Github](gee-cache/day2-single-node)
+
 ## WebAssembly Demo
 
 #### [教程地址](https://geektutu.com/post/quick-go-wasm.html)
 
 - [1. Hello World](demo-wasm/hello-world)
-- [2. 注册函数](demo-wasm/hello-world)
-- [3. 操作 DOM](demo-wasm/hello-world)
-- [4. 回调函数](demo-wasm/hello-world)
+- [2. 注册函数](demo-wasm/register-functions)
+- [3. 操作 DOM](demo-wasm/manipulate-dom)
+- [4. 回调函数](demo-wasm/callback)
