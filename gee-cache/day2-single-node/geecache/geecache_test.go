@@ -1,7 +1,6 @@
 package geecache
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"testing"
@@ -14,24 +13,22 @@ var db = map[string]string{
 }
 
 func TestGet(t *testing.T) {
-	gee := NewGroup("demo", 2<<10, GetterFunc(func(key string, dest Sink) error {
+	gee := NewGroup("demo", 2<<10, GetterFunc(func(key string) ([]byte, error) {
 		log.Printf("search key %s", key)
 		if v, ok := db[key]; ok {
-			return dest.SetBytes([]byte(v))
+			return []byte(v), nil
 		}
-		return errors.New(fmt.Sprintf("%s not exist", key))
+		return nil, fmt.Errorf("%s not exist", key)
 	}))
 
-	var dst []byte
-	dest := AllocatingByteSliceSink(&dst)
-
 	for k, v := range db {
-		if err := gee.Get(k, dest); err != nil || string(dst) != v {
+		view, err := gee.Get(k)
+		if err != nil || view.String() != v {
 			t.Fatal("failed to get value of Tom")
 		}
 	}
 
-	if err := gee.Get("unknown", dest); err == nil {
-		t.Fatalf("the value of unknow should be empty, but %s got", string(dst))
+	if view, err := gee.Get("unknown"); err == nil {
+		t.Fatalf("the value of unknow should be empty, but %s got", view)
 	}
 }
