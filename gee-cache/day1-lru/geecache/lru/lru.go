@@ -17,10 +17,9 @@ type entry struct {
 	value Value
 }
 
-// Value is optional interface for the value
-// if it's not implemented, use unsafe.Sizeof to count
+// Value use Len to count how many bytes it takes
 type Value interface {
-	Len() int // count how many bytes it takes
+	Len() int
 }
 
 // New is the Constructor of Cache
