@@ -68,12 +68,18 @@ func cloneBytes(b []byte) []byte {
 }
 
 func (g *Group) load(key string) (value ByteView, err error) {
+	return g.getLocally(key)
+}
+
+func (g *Group) getLocally(key string) (ByteView, error) {
 	bytes, err := g.getter.Get(key)
-	if err == nil {
-		value = ByteView{cloneBytes(bytes)}
-		g.populateCache(key, value)
+	if err != nil {
+		return ByteView{}, err
+
 	}
-	return
+	value := ByteView{b: cloneBytes(bytes)}
+	g.populateCache(key, value)
+	return value, nil
 }
 
 func (g *Group) populateCache(key string, value ByteView) {

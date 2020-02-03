@@ -1,12 +1,16 @@
 package geecache
 
-import "sync"
+import (
+	"sync"
+)
 
 // A Group is a cache namespace and associated data loaded spread over
 type Group struct {
 	name      string
 	getter    Getter
 	mainCache cache
+	peers     PeerPicker
+	peersOnce sync.Once
 }
 
 // A Getter loads data for a key.
@@ -54,6 +58,9 @@ func GetGroup(name string) *Group {
 
 // Get value for a key from cache
 func (g *Group) Get(key string) (ByteView, error) {
+	g.peersOnce.Do(func() {
+		g.peers = getPeers()
+	})
 	if v, ok := g.mainCache.get(key); ok {
 		return v, nil
 	}
@@ -68,7 +75,18 @@ func cloneBytes(b []byte) []byte {
 }
 
 func (g *Group) load(key string) (value ByteView, err error) {
+	if peer, ok := g.peers.PickPeer(key); ok {
+		value, err = g.getFromPeer(peer, key)
+		if err == nil {
+			return value, nil
+		}
+	}
+
 	return g.getLocally(key)
+}
+
+func (g *Group) populateCache(key string, value ByteView) {
+	g.mainCache.add(key, value)
 }
 
 func (g *Group) getLocally(key string) (ByteView, error) {
@@ -82,6 +100,10 @@ func (g *Group) getLocally(key string) (ByteView, error) {
 	return value, nil
 }
 
-func (g *Group) populateCache(key string, value ByteView) {
-	g.mainCache.add(key, value)
+func (g *Group) getFromPeer(peer PeerGetter, key string) (ByteView, error) {
+	bytes, err := peer.Get(g.name, key)
+	if err != nil {
+		return ByteView{}, err
+	}
+	return ByteView{b: bytes}, nil
 }
