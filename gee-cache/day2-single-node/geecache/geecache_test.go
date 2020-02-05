@@ -15,7 +15,7 @@ var db = map[string]string{
 func TestGet(t *testing.T) {
 	gee := NewGroup("scores", 2<<10, GetterFunc(
 		func(key string) ([]byte, error) {
-			log.Println("[group scores] search key", key)
+			log.Println("[SlowDB] search key", key)
 			if v, ok := db[key]; ok {
 				return []byte(v), nil
 			}
