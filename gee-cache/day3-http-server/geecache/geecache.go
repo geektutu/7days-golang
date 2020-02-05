@@ -1,6 +1,10 @@
 package geecache
 
-import "sync"
+import (
+	"fmt"
+	"log"
+	"sync"
+)
 
 // A Group is a cache namespace and associated data loaded spread over
 type Group struct {
@@ -54,7 +58,12 @@ func GetGroup(name string) *Group {
 
 // Get value for a key from cache
 func (g *Group) Get(key string) (ByteView, error) {
+	if key == "" {
+		return ByteView{}, fmt.Errorf("key is required")
+	}
+
 	if v, ok := g.mainCache.get(key); ok {
+		log.Println("[GeeCache] hit")
 		return v, nil
 	}
 

@@ -1,6 +1,8 @@
 package geecache
 
 import (
+	"fmt"
+	"log"
 	"sync"
 )
 
@@ -10,7 +12,6 @@ type Group struct {
 	getter    Getter
 	mainCache cache
 	peers     PeerPicker
-	peersOnce sync.Once
 }
 
 // A Getter loads data for a key.
@@ -58,14 +59,24 @@ func GetGroup(name string) *Group {
 
 // Get value for a key from cache
 func (g *Group) Get(key string) (ByteView, error) {
-	g.peersOnce.Do(func() {
-		g.peers = getPeers()
-	})
+	if key == "" {
+		return ByteView{}, fmt.Errorf("key is required")
+	}
+
 	if v, ok := g.mainCache.get(key); ok {
+		log.Println("[GeeCache] hit")
 		return v, nil
 	}
 
 	return g.load(key)
+}
+
+// RegisterPeers registers a PeerPicker for choosing remote peer
+func (g *Group) RegisterPeers(peers PeerPicker) {
+	if g.peers != nil {
+		panic("RegisterPeerPicker called more than once")
+	}
+	g.peers = peers
 }
 
 func cloneBytes(b []byte) []byte {
@@ -75,10 +86,12 @@ func cloneBytes(b []byte) []byte {
 }
 
 func (g *Group) load(key string) (value ByteView, err error) {
-	if peer, ok := g.peers.PickPeer(key); ok {
-		value, err = g.getFromPeer(peer, key)
-		if err == nil {
-			return value, nil
+	if g.peers != nil {
+		if peer, ok := g.peers.PickPeer(key); ok {
+			if value, err = g.getFromPeer(peer, key); err == nil {
+				return value, nil
+			}
+			log.Println("[GeeCache] Failed to get from peer", err)
 		}
 	}
 

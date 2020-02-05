@@ -1,5 +1,13 @@
 package main
 
+/*
+$ curl http://localhost:9999/_geecache/scores/Tom
+630
+
+$ curl http://localhost:9999/_geecache/scores/kkk
+kkk not exist
+*/
+
 import (
 	"fmt"
 	"geecache"
@@ -16,7 +24,7 @@ var db = map[string]string{
 func main() {
 	geecache.NewGroup("scores", 2<<10, geecache.GetterFunc(
 		func(key string) ([]byte, error) {
-			log.Println("[group scores] search key", key)
+			log.Println("[SlowDB] search key", key)
 			if v, ok := db[key]; ok {
 				return []byte(v), nil
 			}

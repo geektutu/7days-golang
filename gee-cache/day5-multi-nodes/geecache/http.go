@@ -1,10 +1,9 @@
 package geecache
 
 import (
-	"bytes"
 	"fmt"
 	"geecache/consistenthash"
-	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -29,12 +28,15 @@ type HTTPPool struct {
 
 // NewHTTPPool initializes an HTTP pool of peers, and registers itself as a PeerPicker.
 func NewHTTPPool(self string) *HTTPPool {
-	p := &HTTPPool{
+	return &HTTPPool{
 		self:     self,
 		basePath: defaultBasePath,
 	}
-	RegisterPeerPicker(func() PeerPicker { return p })
-	return p
+}
+
+// Log info with server name
+func (p *HTTPPool) Log(format string, v ...interface{}) {
+	log.Printf("[Server %s] %s", p.self, fmt.Sprintf(format, v...))
 }
 
 // ServeHTTP handle all http requests
@@ -42,7 +44,7 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !strings.HasPrefix(r.URL.Path, p.basePath) {
 		panic("HTTPPool serving unexpected path: " + r.URL.Path)
 	}
-	log.Println("[geecache server]", r.Method, r.URL.Path)
+	p.Log("%s %s", r.Method, r.URL.Path)
 	// /<basepath>/<groupname>/<key> required
 	parts := strings.SplitN(r.URL.Path[len(p.basePath):], "/", 2)
 	if len(parts) != 2 {
@@ -86,6 +88,7 @@ func (p *HTTPPool) PickPeer(key string) (PeerGetter, bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	if peer := p.peers.Get(key); peer != "" && peer != p.self {
+		p.Log("Pick peer %s", peer)
 		return p.httpGetters[peer], true
 	}
 	return nil, false
@@ -95,10 +98,6 @@ var _ PeerPicker = (*HTTPPool)(nil)
 
 type httpGetter struct {
 	baseURL string
-}
-
-var bufferPool = sync.Pool{
-	New: func() interface{} { return new(bytes.Buffer) },
 }
 
 func (h *httpGetter) Get(group string, key string) ([]byte, error) {
@@ -118,17 +117,12 @@ func (h *httpGetter) Get(group string, key string) ([]byte, error) {
 		return nil, fmt.Errorf("server returned: %v", res.Status)
 	}
 
-	b := bufferPool.Get().(*bytes.Buffer)
-	b.Reset()
-	defer bufferPool.Put(b)
-
-	_, err = io.Copy(b, res.Body)
-
+	bytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil, fmt.Errorf("reading response body: %v", err)
 	}
 
-	return b.Bytes(), nil
+	return bytes, nil
 }
 
 var _ PeerGetter = (*httpGetter)(nil)
