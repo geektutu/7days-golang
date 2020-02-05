@@ -1,8 +1,14 @@
-# 7天用Go从零实现Web框架Gee
+# 7 Days Go Web Framework Gee from Scratch
+
+<details>
+<summary>README 中文版本</summary>
+<div>
+
+## 7天用Go从零实现Web框架Gee
 
 ![Gee](doc/gee/gee.jpg)
 
-## 教程目录
+### Content
 
 - [第一天：前置知识(http.Handler接口)](https://geektutu.com/post/gee-day1.html)
 - [第二天：上下文设计(Context)](https://geektutu.com/post/gee-day2.html)
@@ -11,6 +17,9 @@
 - [第五天：中间件(Middleware)](https://geektutu.com/post/gee-day5.html)
 - [第六天：HTML模板(Template)](https://geektutu.com/post/gee-day6.html)
 - [第七天：错误恢复(Panic Recover)](https://geektutu.com/post/gee-day7.html)
+
+</div>
+</details>
 
 ## Day 1 - Static Route
 
