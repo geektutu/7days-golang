@@ -31,6 +31,8 @@ GeeCache 是一个模仿 [groupcache](https://github.com/golang/groupcache) 实�
 - 第三天：HTTP 服务端 | [Code](gee-cache/day3-http-server)
 - 第四天：一致性哈希(Hash) | [Code](gee-cache/day4-consistent-hash)
 - 第五天：分布式节点 | [Code](gee-cache/day5-multi-nodes)
+- 第六天：防止缓存击穿 | [Code](gee-cache/day6-single-flight)
+- 第七天：使用 Protobuf 通信 | [Code](gee-cache/day7-proto-buf)
 
 ### WebAssembly 使用示例
 
@@ -67,6 +69,8 @@ Geecache is a [groupcache](https://github.com/golang/groupcache)-like distribute
 - Day 3 - Launch a HTTP Server [Code](gee-cache/day3-http-server)
 - Day 4 - Consistent Hash Algorithm [Code](gee-cache/day4-consistent-hash)
 - Day 5 - Communication between Distributed Nodes [Code](gee-cache/day5-multi-nodes)
+- Day 6 - Cache Breakdown & Single Flight  | [Code](gee-cache/day6-single-flight)
+- Day 7 - Use Protobuf as RPC Data Exchange Type | [Code](gee-cache/day7-proto-buf)
 
 ## Golang WebAssembly Demo
 
