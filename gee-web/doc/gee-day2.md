@@ -4,8 +4,9 @@ date: 2019-08-19 00:10:10
 description: 7天用 Go语言 从零实现Web框架教程(7 days implement golang web framework from scratch tutorial)，用 Go语言/golang 动手写Web框架，从零实现一个Web框架，以 Gin 为原型从零设计一个Web框架。本文介绍了请求上下文(Context)的设计理念，封装了返回JSON/String/Data/HTML等类型响应的方法。
 tags:
 - Go
+nav: 从零实现
 categories:
-- 从零实现
+- Web框架 - Gee
 keywords:
 - Go语言
 - 从零实现Web框架
