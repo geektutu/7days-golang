@@ -24,7 +24,7 @@
 
 ### 7天用Go从零实现分布式缓存 GeeCache
 
-GeeCache 是一个模仿 [groupcache](https://github.com/golang/groupcache) 实现的分布式缓存系统
+[GeeCache](https://geektutu.com/post/geecache.html) 是一个模仿 [groupcache](https://github.com/golang/groupcache) 实现的分布式缓存系统
 
 - 第一天：LRU 缓存策略 | [Code](gee-cache/day1-lru)
 - 第二天：单机并发缓存 | [Code](gee-cache/day2-single-node)
@@ -62,7 +62,7 @@ What can I write in 7 days? A gin-like web framework? A distributed cache like g
 
 ## Distributed Cache - Geecache
 
-Geecache is a [groupcache](https://github.com/golang/groupcache)-like distributed cache
+[GeeCache](https://geektutu.com/post/geecache.html) is a [groupcache](https://github.com/golang/groupcache)-like distributed cache
 
 - Day 1 - LRU (Least Recently Used) Caching Strategy [Code](gee-cache/day1-lru)
 - Day 2 - Single Machine Concurrent Cache [Code](gee-cache/day2-single-node)
