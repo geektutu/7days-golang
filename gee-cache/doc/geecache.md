@@ -1,7 +1,7 @@
 ---
 title: 7天用Go从零实现分布式缓存GeeCache
 date: 2020-02-08 01:00:00
-description: 7天用 用 Go语言/golang 从零实现分布式缓存 GeeCache 教程(7 days implement golang distributed cache from scratch tutorial)，动手写分布式缓存，参照 groupcache 的实现。功能包括单机/分布式缓存，LRU (Least Recently Used) 缓存策略，防止缓存击穿、一致性哈希(Consistent Hash)，protobuf 通信等。
+description: 7天用 Go语言/golang 从零实现分布式缓存 GeeCache 教程(7 days implement golang distributed cache from scratch tutorial)，动手写分布式缓存，参照 groupcache 的实现。功能包括单机/分布式缓存，LRU (Least Recently Used) 缓存策略，防止缓存击穿、一致性哈希(Consistent Hash)，protobuf 通信等。
 tags:
 - Go
 nav: 从零实现
@@ -58,7 +58,7 @@ github: https://github.com/geektutu/7days-golang
 
 ## 3 目录
 
-- 第一天：LRU 缓存策略 | [Code - Github](https://github.com/geektutu/7days-golang/blob/master/gee-cache/day1-lru)
+- [第一天：LRU 缓存淘汰策略](https://geektutu.com/post/geecache-day1.html) | [Code - Github](https://github.com/geektutu/7days-golang/blob/master/gee-cache/day1-lru)
 - 第二天：单机并发缓存 | [Code - Github](https://github.com/geektutu/7days-golang/blob/master/gee-cache/day2-single-node)
 - 第三天：HTTP 服务端 | [Code - Github](https://github.com/geektutu/7days-golang/blob/master/gee-cache/day3-http-server)
 - 第四天：一致性哈希(Hash) | [Code - Github](https://github.com/geektutu/7days-golang/blob/master/gee-cache/day4-consistent-hash)
@@ -69,4 +69,5 @@ github: https://github.com/geektutu/7days-golang
 ## 附 推荐阅读
 
 - [Go 语言简明教程](https://geektutu.com/post/quick-golang.html)
+- [Go Test 单元测试简明教程](https://geektutu.com/post/quick-go-test.html)
 - [Go Protobuf 简明教程](https://geektutu.com/post/quick-go-protobuf.html)
