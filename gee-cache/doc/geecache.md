@@ -59,8 +59,8 @@ github: https://github.com/geektutu/7days-golang
 ## 3 目录
 
 - [第一天：LRU 缓存淘汰策略](https://geektutu.com/post/geecache-day1.html) | [Code - Github](https://github.com/geektutu/7days-golang/blob/master/gee-cache/day1-lru)
-- 第二天：单机并发缓存 | [Code - Github](https://github.com/geektutu/7days-golang/blob/master/gee-cache/day2-single-node)
-- 第三天：HTTP 服务端 | [Code - Github](https://github.com/geektutu/7days-golang/blob/master/gee-cache/day3-http-server)
+- [第二天：单机并发缓存](https://geektutu.com/post/geecache-day2.html) | [Code - Github](https://github.com/geektutu/7days-golang/blob/master/gee-cache/day2-single-node)
+- [第三天：HTTP 服务端](https://geektutu.com/post/geecache-day3.html) | [Code - Github](https://github.com/geektutu/7days-golang/blob/master/gee-cache/day3-http-server)
 - 第四天：一致性哈希(Hash) | [Code - Github](https://github.com/geektutu/7days-golang/blob/master/gee-cache/day4-consistent-hash)
 - 第五天：分布式节点 | [Code - Github](https://github.com/geektutu/7days-golang/blob/master/gee-cache/day5-multi-nodes)
 - 第六天：防止缓存击穿 | [Code - Github](https://github.com/geektutu/7days-golang/blob/master/gee-cache/day6-single-flight)

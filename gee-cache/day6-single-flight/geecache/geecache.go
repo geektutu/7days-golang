@@ -84,12 +84,6 @@ func (g *Group) RegisterPeers(peers PeerPicker) {
 	g.peers = peers
 }
 
-func cloneBytes(b []byte) []byte {
-	c := make([]byte, len(b))
-	copy(c, b)
-	return c
-}
-
 func (g *Group) load(key string) (value ByteView, err error) {
 	// each key is only fetched once (either locally or remotely)
 	// regardless of the number of concurrent callers.

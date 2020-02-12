@@ -26,7 +26,7 @@ type HTTPPool struct {
 	httpGetters map[string]*httpGetter // keyed by e.g. "http://10.0.0.2:8008"
 }
 
-// NewHTTPPool initializes an HTTP pool of peers, and registers itself as a PeerPicker.
+// NewHTTPPool initializes an HTTP pool of peers.
 func NewHTTPPool(self string) *HTTPPool {
 	return &HTTPPool{
 		self:     self,

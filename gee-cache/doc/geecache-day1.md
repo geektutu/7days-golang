@@ -1,7 +1,7 @@
 ---
 title: 动手写分布式缓存 - GeeCache第一天 LRU 缓存淘汰策略
 date: 2020-02-11 22:00:00
-description: 7天用 Go语言/golang 从零实现分布式缓存 GeeCache 教程(7 days implement golang distributed cache from scratch tutorial)，动手写分布式缓存，参照 groupcache 的实现。本文介绍常用的三种缓存淘汰(失效)算法：先进先出(FIFO)，最少使用(LFU) 和 最近最少使用(LRU)，并实现 LRU 算法和相应的测试代码。
+description: 7天用 Go语言/golang 从零实现分布式缓存 GeeCache 教程(7 days implement golang distributed cache from scratch tutorial)，动手写分布式缓存，参照 groupcache 的实现。本文介绍了常用的三种缓存淘汰(失效)算法：先进先出(FIFO)，最少使用(LFU) 和 最近最少使用(LRU)，并实现 LRU 算法和相应的测试代码。
 tags:
 - Go
 nav: 从零实现
@@ -9,8 +9,8 @@ categories:
 - 分布式缓存 - GeeCache
 keywords:
 - Go语言
-- 从零实现分布式缓存
-- 动手写分布式缓存
+- 从零实现
+- 分布式缓存
 - LRU
 - 缓存失效
 image: post/geecache-day1/lru_logo.jpg
@@ -141,7 +141,7 @@ func (c *Cache) RemoveOldest() {
 ```
 
 - `c.ll.Back()` 取到队首节点，从链表中删除。
-- `delete(c.cache, kv.key)`，从字典中`c.cache`删除该节点的映射关系。
+- `delete(c.cache, kv.key)`，从字典中 `c.cache` 删除该节点的映射关系。
 - 更新当前所用的内存 `c.nbytes`。
 - 如果回调函数 `OnEvicted` 不为 nil，则调用回调函数。
 
@@ -167,7 +167,7 @@ func (c *Cache) Add(key string, value Value) {
 ```
 
 - 如果键存在，则更新对应节点的值，并将该节点移到队尾。
-- 不存在则是新增场景，首先队尾添加新节点 `&entry{key, value}`, 并字典中添加 `key` 和节点的映射关系。
+- 不存在则是新增场景，首先队尾添加新节点 `&entry{key, value}`, 并字典中添加 key 和节点的映射关系。
 - 更新 `c.nbytes`，如果超过了设定的最大值 `c.maxBytes`，则移除最少访问的节点。
 
 最后，为了方便测试，我们实现 `Len()` 用来获取添加了多少条数据。
