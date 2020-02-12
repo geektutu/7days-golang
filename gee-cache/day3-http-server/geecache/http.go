@@ -16,7 +16,7 @@ type HTTPPool struct {
 	basePath string
 }
 
-// NewHTTPPool initializes an HTTP pool of peers, and registers itself as a PeerPicker.
+// NewHTTPPool initializes an HTTP pool of peers.
 func NewHTTPPool(self string) *HTTPPool {
 	return &HTTPPool{
 		self:     self,

@@ -79,12 +79,6 @@ func (g *Group) RegisterPeers(peers PeerPicker) {
 	g.peers = peers
 }
 
-func cloneBytes(b []byte) []byte {
-	c := make([]byte, len(b))
-	copy(c, b)
-	return c
-}
-
 func (g *Group) load(key string) (value ByteView, err error) {
 	if g.peers != nil {
 		if peer, ok := g.peers.PickPeer(key); ok {

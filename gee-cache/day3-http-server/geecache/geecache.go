@@ -70,12 +70,6 @@ func (g *Group) Get(key string) (ByteView, error) {
 	return g.load(key)
 }
 
-func cloneBytes(b []byte) []byte {
-	c := make([]byte, len(b))
-	copy(c, b)
-	return c
-}
-
 func (g *Group) load(key string) (value ByteView, err error) {
 	return g.getLocally(key)
 }
