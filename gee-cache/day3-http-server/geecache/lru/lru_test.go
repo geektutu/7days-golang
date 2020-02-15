@@ -53,3 +53,13 @@ func TestOnEvicted(t *testing.T) {
 		t.Fatalf("Call OnEvicted failed, expect keys equals to %s", expect)
 	}
 }
+
+func TestAdd(t *testing.T) {
+	lru := New(int64(0), nil)
+	lru.Add("key", String("1"))
+	lru.Add("key", String("111"))
+
+	if lru.nbytes != int64(len("key")+len("111")) {
+		t.Fatal("expected 6 but got", lru.nbytes)
+	}
+}
