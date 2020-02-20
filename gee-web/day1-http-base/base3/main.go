@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"./gee"
+	"gee"
 )
 
 func main() {

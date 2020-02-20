@@ -37,7 +37,7 @@ $ curl "http://localhost:9999/hello"
 import (
 	"net/http"
 
-	"./gee"
+	"gee"
 )
 
 func main() {
