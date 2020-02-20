@@ -24,7 +24,7 @@ import (
 	"net/http"
 	"time"
 
-	"./gee"
+	"gee"
 )
 
 func onlyForV2() gee.HandlerFunc {

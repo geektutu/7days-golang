@@ -131,8 +131,28 @@ func main() {
 ```bash
 gee/
   |--gee.go
+  |--go.mod
 main.go
+go.mod
 ```
+
+### go.mod
+
+**[day1-http-base/base3/go.mod](https://github.com/geektutu/7days-golang/tree/master/gee-web/day1-http-base/base3)**
+
+```bash
+module example
+
+go 1.13
+
+require gee v0.0.0
+
+replace gee => ./gee
+```
+
+- 在 `go.mod` 中使用 `replace` 将 gee 指向 `./gee`
+
+> 从 go 1.11 版本开始，引用相对路径的 package 需要使用上述方式。
 
 ### main.go
 
@@ -145,7 +165,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"./gee"
+	"gee"
 )
 
 func main() {

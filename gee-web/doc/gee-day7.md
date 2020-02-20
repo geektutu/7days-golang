@@ -228,7 +228,7 @@ package main
 import (
 	"net/http"
 
-	"./gee"
+	"gee"
 )
 
 func main() {

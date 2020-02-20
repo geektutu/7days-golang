@@ -39,7 +39,7 @@ import (
 	"net/http"
 	"time"
 
-	"./gee"
+	"gee"
 )
 
 type student struct {
