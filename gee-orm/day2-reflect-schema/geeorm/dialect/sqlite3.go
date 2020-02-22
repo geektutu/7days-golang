@@ -14,7 +14,7 @@ func init() {
 	RegisterDialect("sqlite3", &sqlite3{})
 }
 
-// Get Data Type for Sqlite Dialect
+// Get Data Type for sqlite3 Dialect
 func (s *sqlite3) DataTypeOf(typ reflect.Value) string {
 	switch typ.Kind() {
 	case reflect.Bool:
@@ -40,4 +40,9 @@ func (s *sqlite3) DataTypeOf(typ reflect.Value) string {
 
 func (s *sqlite3) PrimaryKeyTag(key string) string {
 	return "INTEGER PRIMARY KEY AUTOINCREMENT"
+}
+
+func (s *sqlite3) TableExistSQL(tableName string) (string, []interface{}) {
+	args := []interface{}{tableName}
+	return "SELECT name FROM sqlite_master WHERE type='table' and name = ?", args
 }

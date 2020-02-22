@@ -14,7 +14,7 @@ func TestParse(t *testing.T) {
 	dial, _ := dialect.GetDialect("sqlite3")
 	schema := Parse(&User{"Tom", 18}, dial)
 
-	if schema.Table != "User" || len(schema.Fields) != 2 {
+	if schema.TableName != "User" || len(schema.Fields) != 2 {
 		t.Fatal("failed to parse User struct")
 	}
 }
