@@ -36,6 +36,12 @@
 - 第六天：[防止缓存击穿](https://geektutu.com/post/geecache-day6.html) | [Code](gee-cache/day6-single-flight)
 - 第七天：[使用 Protobuf 通信](https://geektutu.com/post/geecache-day7.html) | [Code](gee-cache/day7-proto-buf)
 
+### 7天用Go从零实现ORM框架 GeeORM
+
+[GeeORM] 是一个模仿 [gorm](https://github.com/jinzhu/gorm) 和 [xorm](https://github.com/go-xorm/xorm) 的 ORM 框架
+
+gorm 准备推出完全重写的 v2 版本(目前还在开发中)，相对 gorm-v1 来说，xorm 的设计更容易理解，所以 geeorm 接口设计上主要参考了 xorm，具体实现参考了 gorm。
+
 ### WebAssembly 使用示例
 
 具体的实践过程记录在 [Go WebAssembly 简明教程](https://geektutu.com/post/quick-go-wasm.html)。
@@ -62,7 +68,7 @@ What can I write in 7 days? A gin-like web framework? A distributed cache like g
 - Day 6 - Embeded Template Support [Code](gee-web/day6-template)
 - Day 7 - Panic Recover & Make it Robust [Code](gee-web/day7-panic-recover)
 
-## Distributed Cache - Geecache
+## Distributed Cache - GeeCache
 
 [GeeCache](https://geektutu.com/post/geecache.html) is a [groupcache](https://github.com/golang/groupcache)-like distributed cache
 
@@ -73,6 +79,12 @@ What can I write in 7 days? A gin-like web framework? A distributed cache like g
 - Day 5 - Communication between Distributed Nodes [Code](gee-cache/day5-multi-nodes)
 - Day 6 - Cache Breakdown & Single Flight  | [Code](gee-cache/day6-single-flight)
 - Day 7 - Use Protobuf as RPC Data Exchange Type | [Code](gee-cache/day7-proto-buf)
+
+## Object Relational Mapping - GeeOrm
+
+[GeeOrm] is a [gorm](https://github.com/jinzhu/gorm)-like and [xorm](https://github.com/go-xorm/xorm)-like object relational mapping library
+
+Xorm's desgin is easier to understand than gorm-v1, so the main designs references xorm and some detailed implementions references gorm-v1.
 
 ## Golang WebAssembly Demo
 

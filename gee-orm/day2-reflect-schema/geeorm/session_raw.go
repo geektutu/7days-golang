@@ -2,7 +2,6 @@ package geeorm
 
 import (
 	"database/sql"
-	"fmt"
 	"strings"
 
 	"geeorm/schema"
@@ -18,13 +17,20 @@ type Session struct {
 }
 
 func (s *Session) Exec() (result sql.Result, err error) {
+	InfoLog.Println(s.SQL.String(), s.SQLVars)
 	if result, err = s.engine.db.Exec(s.SQL.String(), s.SQLVars...); err != nil {
 		ErrorLog.Println(err)
 	}
 	return
 }
 
+func (s *Session) QueryRow() *sql.Row {
+	InfoLog.Println(s.SQL.String(), s.SQLVars)
+	return s.engine.db.QueryRow(s.SQL.String(), s.SQLVars...)
+}
+
 func (s *Session) QueryRows() (rows *sql.Rows, err error) {
+	InfoLog.Println(s.SQL.String(), s.SQLVars)
 	if rows, err = s.engine.db.Query(s.SQL.String(), s.SQLVars...); err != nil {
 		ErrorLog.Println(err)
 	}
@@ -34,15 +40,5 @@ func (s *Session) QueryRows() (rows *sql.Rows, err error) {
 func (s *Session) Raw(sql string, values ...interface{}) *Session {
 	s.SQL.WriteString(sql)
 	s.SQLVars = values
-	return s
-}
-
-func (s *Session) CreateTable() *Session {
-	var columns []string
-	for _, field := range s.refTable.Fields {
-		columns = append(columns, fmt.Sprintf("%s %s", field.Name, field.Tag))
-	}
-	desc := strings.Join(columns, ",")
-	s.SQL.WriteString(fmt.Sprintf("CREATE TABLE %s (%s);", s.refTable.Table, desc))
 	return s
 }

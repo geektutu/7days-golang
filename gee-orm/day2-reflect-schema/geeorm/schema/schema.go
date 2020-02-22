@@ -10,7 +10,7 @@ import (
 )
 
 type Schema struct {
-	Table        string
+	TableName    string
 	PrimaryField *Field
 	Fields       []*Field
 }
@@ -19,7 +19,7 @@ func Parse(dest interface{}, d dialect.Dialect) *Schema {
 	modelType := reflect.Indirect(reflect.ValueOf(dest)).Type()
 
 	schema := &Schema{
-		Table:        modelType.Name(),
+		TableName:    modelType.Name(),
 		PrimaryField: &Field{Name: "ID", Value: 0},
 	}
 
@@ -41,5 +41,5 @@ func (s *Schema) String() string {
 		fieldStr = append(fieldStr, field.String())
 	}
 
-	return fmt.Sprintf("TABLE %s(%s)", s.Table, strings.Join(fieldStr, ", "))
+	return fmt.Sprintf("TABLE %s(%s)", s.TableName, strings.Join(fieldStr, ", "))
 }
