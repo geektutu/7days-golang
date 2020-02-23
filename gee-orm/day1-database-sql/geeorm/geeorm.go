@@ -2,42 +2,43 @@ package geeorm
 
 import (
 	"database/sql"
-	"log"
-	"os"
+
+	"geeorm/log"
+	"geeorm/session"
 )
 
-var (
-	ErrorLog = log.New(os.Stdout, "[error] ", log.LstdFlags|log.Lshortfile)
-	InfoLog  = log.New(os.Stdout, "[info ] ", log.LstdFlags|log.Lshortfile)
-)
-
+// Engine is the main struct of geeorm, manages all db sessions and transactions.
 type Engine struct {
 	db *sql.DB
 }
 
+// NewEngine create a instance of Engine
+// connect database and ping it to test whether it's alive
 func NewEngine(driver, source string) (e *Engine, err error) {
 	db, err := sql.Open(driver, source)
 	if err != nil {
-		ErrorLog.Println(err)
+		log.Error.Println(err)
 		return
 	}
 	// Send a ping to make sure the database connection is alive.
 	if err = db.Ping(); err != nil {
-		ErrorLog.Println(err)
+		log.Error.Println(err)
 		return
 	}
 	e = &Engine{db: db}
-	InfoLog.Println("Connect database success")
+	log.Info.Println("Connect database success")
 	return
 }
 
+// Close database connection
 func (engine *Engine) Close() (err error) {
 	if err = engine.db.Close(); err == nil {
-		InfoLog.Println("Close database success")
+		log.Info.Println("Close database success")
 	}
 	return
 }
 
-func (engine *Engine) NewSession() *Session {
-	return &Session{engine: engine}
+// NewSession creates a new session for next operations
+func (engine *Engine) NewSession() *session.Session {
+	return session.New(engine.db)
 }

@@ -16,5 +16,5 @@ func OpenDB(t *testing.T) *Engine {
 
 func TestNewEngine(t *testing.T) {
 	engine := OpenDB(t)
-	defer engine.Close()
+	_ = engine.Close()
 }

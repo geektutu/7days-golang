@@ -20,6 +20,7 @@ func TestParse(t *testing.T) {
 	if schema.PrimaryField.Name != "Name" {
 		t.Fatal("failed to parse primary key")
 	}
+	t.Log(schema)
 }
 
 func TestSchema_Values(t *testing.T) {
