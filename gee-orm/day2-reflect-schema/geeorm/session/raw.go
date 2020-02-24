@@ -31,24 +31,24 @@ func New(db *sql.DB, dialect dialect.Dialect) *Session {
 
 // Exec raw SQL with SQLVars
 func (s *Session) Exec() (result sql.Result, err error) {
-	log.Info.Println(s.SQL.String(), s.SQLVars)
+	log.Info(s.SQL.String(), s.SQLVars)
 	if result, err = s.db.Exec(s.SQL.String(), s.SQLVars...); err != nil {
-		log.Error.Println(err)
+		log.Error(err)
 	}
 	return
 }
 
 // QueryRow gets a record from db
 func (s *Session) QueryRow() *sql.Row {
-	log.Info.Println(s.SQL.String(), s.SQLVars)
+	log.Info(s.SQL.String(), s.SQLVars)
 	return s.db.QueryRow(s.SQL.String(), s.SQLVars...)
 }
 
 // QueryRows gets a list of records from db
 func (s *Session) QueryRows() (rows *sql.Rows, err error) {
-	log.Info.Println(s.SQL.String(), s.SQLVars)
+	log.Info(s.SQL.String(), s.SQLVars)
 	if rows, err = s.db.Query(s.SQL.String(), s.SQLVars...); err != nil {
-		log.Error.Println(err)
+		log.Error(err)
 	}
 	return
 }

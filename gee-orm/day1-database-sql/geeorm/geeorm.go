@@ -17,23 +17,23 @@ type Engine struct {
 func NewEngine(driver, source string) (e *Engine, err error) {
 	db, err := sql.Open(driver, source)
 	if err != nil {
-		log.Error.Println(err)
+		log.Error(err)
 		return
 	}
 	// Send a ping to make sure the database connection is alive.
 	if err = db.Ping(); err != nil {
-		log.Error.Println(err)
+		log.Error(err)
 		return
 	}
 	e = &Engine{db: db}
-	log.Info.Println("Connect database success")
+	log.Info("Connect database success")
 	return
 }
 
 // Close database connection
 func (engine *Engine) Close() (err error) {
 	if err = engine.db.Close(); err == nil {
-		log.Info.Println("Close database success")
+		log.Info("Close database success")
 	}
 	return
 }

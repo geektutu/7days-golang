@@ -53,7 +53,7 @@ func (s *Session) HasTable(value interface{}) bool {
 	row := s.Raw(sql, values...).QueryRow()
 	var tmp string
 	if err := row.Scan(&tmp); err != nil {
-		log.Error.Println(err)
+		log.Error(err)
 	}
 	return tmp == tableName
 }
