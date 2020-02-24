@@ -19,7 +19,6 @@ type Schema struct {
 	PrimaryField *Field
 	Fields       []*Field
 	FieldNames   []string
-	BindVars     []string
 }
 
 // Values return the values of dest's member variables
@@ -52,7 +51,6 @@ func Parse(dest interface{}, d dialect.Dialect) *Schema {
 			}
 			schema.Fields = append(schema.Fields, field)
 			schema.FieldNames = append(schema.FieldNames, p.Name)
-			schema.BindVars = append(schema.BindVars, "?")
 		}
 	}
 	return schema

@@ -1,7 +1,7 @@
 package session
 
 import (
-	"fmt"
+	"geeorm/clause"
 	"reflect"
 	"strings"
 )
@@ -9,23 +9,20 @@ import (
 // Create one or more records in database
 func (s *Session) Create(values ...interface{}) (int64, error) {
 	var flag bool
-	for i, value := range values {
+	recordValues := make([]interface{}, 0)
+	for _, value := range values {
 		table := s.RefTable(value)
-		filedSQL := strings.Join(table.FieldNames, ", ")
-		bindVarSQL := strings.Join(table.BindVars, ", ")
 		if !flag {
-			s.Raw(fmt.Sprintf("INSERT INTO %s (%v) VALUES ", table.TableName, filedSQL))
 			flag = true
+			fieldSQL := strings.Join(table.FieldNames, ", ")
+			s.clause.Set(clause.INSERT, table.TableName, fieldSQL)
 		}
-		s.Raw(fmt.Sprintf("(%v)", bindVarSQL), table.Values(value)...)
-		if i == len(values)-1 {
-			s.Raw(";")
-		} else {
-			s.Raw(",")
-		}
+		recordValues = append(recordValues, table.Values(value))
 	}
 
-	result, err := s.Exec()
+	s.clause.Set(clause.VALUES, recordValues...)
+	sql, vars := s.clause.Build([]clause.Type{clause.INSERT, clause.VALUES})
+	result, err := s.Raw(sql, vars...).Exec()
 	if err != nil {
 		return 0, err
 	}
@@ -38,8 +35,12 @@ func (s *Session) First(value interface{}) error {
 	table := s.RefTable(value)
 
 	fieldSQL := strings.Join(table.FieldNames, ", ")
-	selectSQL := fmt.Sprintf("SELECT %v FROM %s LIMIT 1", fieldSQL, table.TableName)
-	row := s.Raw(selectSQL).QueryRow()
+
+	s.clause.Set(clause.SELECT, table.TableName, fieldSQL)
+	s.clause.Set(clause.LIMIT, 1)
+
+	sql, vars := s.clause.Build([]clause.Type{clause.SELECT, clause.LIMIT})
+	row := s.Raw(sql, vars...).QueryRow()
 
 	dest := reflect.ValueOf(value).Elem()
 	var values []interface{}
@@ -57,8 +58,9 @@ func (s *Session) Find(values interface{}) error {
 	table := s.RefTable(reflect.New(destType).Elem().Interface())
 
 	fieldSQL := strings.Join(table.FieldNames, ", ")
-	selectSQL := fmt.Sprintf("SELECT %v FROM %s", fieldSQL, table.TableName)
-	rows, err := s.Raw(selectSQL).QueryRows()
+	s.clause.Set(clause.SELECT, table.TableName, fieldSQL)
+	sql, vars := s.clause.Build([]clause.Type{clause.SELECT})
+	rows, err := s.Raw(sql, vars...).QueryRows()
 	if err != nil {
 		return err
 	}
