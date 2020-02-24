@@ -2,7 +2,6 @@ package session
 
 import (
 	"database/sql"
-	"geeorm/log"
 	"os"
 	"testing"
 
@@ -18,7 +17,6 @@ var (
 func setup() {
 	TestDB, _ = sql.Open("sqlite3", "gee.db")
 	TestDial, _ = dialect.GetDialect("sqlite3")
-	log.SetLevel(log.ErrorLevel)
 }
 
 func teardown() {

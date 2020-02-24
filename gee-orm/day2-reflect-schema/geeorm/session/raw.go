@@ -2,8 +2,6 @@ package session
 
 import (
 	"database/sql"
-	"strings"
-
 	"geeorm/dialect"
 	"geeorm/log"
 	"geeorm/schema"
@@ -15,10 +13,8 @@ type Session struct {
 	db       *sql.DB
 	dialect  dialect.Dialect
 	refTable *schema.Schema
-
-	Value   interface{}
-	SQL     strings.Builder
-	SQLVars []interface{}
+	sql      string
+	sqlVars  []interface{}
 }
 
 // New creates a instance of Session
@@ -29,10 +25,10 @@ func New(db *sql.DB, dialect dialect.Dialect) *Session {
 	}
 }
 
-// Exec raw SQL with SQLVars
+// Exec raw sql with sqlVars
 func (s *Session) Exec() (result sql.Result, err error) {
-	log.Info(s.SQL.String(), s.SQLVars)
-	if result, err = s.db.Exec(s.SQL.String(), s.SQLVars...); err != nil {
+	log.Info(s.sql, s.sqlVars)
+	if result, err = s.db.Exec(s.sql, s.sqlVars...); err != nil {
 		log.Error(err)
 	}
 	return
@@ -40,22 +36,22 @@ func (s *Session) Exec() (result sql.Result, err error) {
 
 // QueryRow gets a record from db
 func (s *Session) QueryRow() *sql.Row {
-	log.Info(s.SQL.String(), s.SQLVars)
-	return s.db.QueryRow(s.SQL.String(), s.SQLVars...)
+	log.Info(s.sql, s.sqlVars)
+	return s.db.QueryRow(s.sql, s.sqlVars...)
 }
 
 // QueryRows gets a list of records from db
 func (s *Session) QueryRows() (rows *sql.Rows, err error) {
-	log.Info(s.SQL.String(), s.SQLVars)
-	if rows, err = s.db.Query(s.SQL.String(), s.SQLVars...); err != nil {
+	log.Info(s.sql, s.sqlVars)
+	if rows, err = s.db.Query(s.sql, s.sqlVars...); err != nil {
 		log.Error(err)
 	}
 	return
 }
 
-// Raw appends SQL and SQLVars
+// Raw appends sql and sqlVars
 func (s *Session) Raw(sql string, values ...interface{}) *Session {
-	s.SQL.WriteString(sql)
-	s.SQLVars = append(s.SQLVars, values...)
+	s.sql += sql
+	s.sqlVars = append(s.sqlVars, values...)
 	return s
 }
