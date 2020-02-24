@@ -65,5 +65,5 @@ func (field *Field) String() string {
 
 // String returns readable string
 func (schema *Schema) String() string {
-	return fmt.Sprintf("TABLE %s(%v)", schema.TableName, schema.Fields)
+	return fmt.Sprintf("TABLE %s %v", schema.TableName, schema.Fields)
 }

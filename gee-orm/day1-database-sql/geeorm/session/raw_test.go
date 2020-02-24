@@ -2,6 +2,7 @@ package session
 
 import (
 	"database/sql"
+	"geeorm/log"
 	"os"
 	"testing"
 
@@ -12,6 +13,7 @@ var TestDB *sql.DB
 
 func setup() {
 	TestDB, _ = sql.Open("sqlite3", "gee.db")
+	log.SetLevel(log.ErrorLevel)
 }
 
 func teardown() {
