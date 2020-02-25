@@ -50,3 +50,31 @@ func (s *Session) Find(values interface{}) error {
 	}
 	return rows.Close()
 }
+
+// First gets the 1st row
+func (s *Session) First(value interface{}) error {
+	dest := reflect.Indirect(reflect.ValueOf(value))
+	destSlice := reflect.New(reflect.SliceOf(dest.Type())).Elem()
+	err := s.Limit(1).Find(destSlice.Addr().Interface())
+	dest.Set(destSlice.Index(0))
+	return err
+}
+
+// Limit adds limit condition to clause
+func (s *Session) Limit(num int) *Session {
+	s.clause.Set(clause.LIMIT, num)
+	return s
+}
+
+// Where adds limit condition to clause
+func (s *Session) Where(desc string, args ...interface{}) *Session {
+	var vars []interface{}
+	s.clause.Set(clause.WHERE, append(append(vars, desc), args...)...)
+	return s
+}
+
+// OrderBy adds order by condition to clause
+func (s *Session) OrderBy(desc string) *Session {
+	s.clause.Set(clause.ORDERBY, desc)
+	return s
+}
