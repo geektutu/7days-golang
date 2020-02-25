@@ -3,20 +3,14 @@ package session
 import (
 	"geeorm/clause"
 	"reflect"
-	"strings"
 )
 
 // Create one or more records in database
 func (s *Session) Create(values ...interface{}) (int64, error) {
-	var flag bool
 	recordValues := make([]interface{}, 0)
 	for _, value := range values {
 		table := s.RefTable(value)
-		if !flag {
-			flag = true
-			fieldSQL := strings.Join(table.FieldNames, ", ")
-			s.clause.Set(clause.INSERT, table.TableName, fieldSQL)
-		}
+		s.clause.Set(clause.INSERT, table.TableName, table.FieldNames)
 		recordValues = append(recordValues, table.Values(value))
 	}
 
@@ -34,9 +28,7 @@ func (s *Session) Create(values ...interface{}) (int64, error) {
 func (s *Session) First(value interface{}) error {
 	table := s.RefTable(value)
 
-	fieldSQL := strings.Join(table.FieldNames, ", ")
-
-	s.clause.Set(clause.SELECT, table.TableName, fieldSQL)
+	s.clause.Set(clause.SELECT, table.TableName, table.FieldNames)
 	s.clause.Set(clause.LIMIT, 1)
 
 	sql, vars := s.clause.Build([]clause.Type{clause.SELECT, clause.LIMIT})
@@ -57,8 +49,7 @@ func (s *Session) Find(values interface{}) error {
 	destType := destSlice.Type().Elem()
 	table := s.RefTable(reflect.New(destType).Elem().Interface())
 
-	fieldSQL := strings.Join(table.FieldNames, ", ")
-	s.clause.Set(clause.SELECT, table.TableName, fieldSQL)
+	s.clause.Set(clause.SELECT, table.TableName, table.FieldNames)
 	sql, vars := s.clause.Build([]clause.Type{clause.SELECT})
 	rows, err := s.Raw(sql, vars...).QueryRows()
 	if err != nil {
@@ -76,8 +67,5 @@ func (s *Session) Find(values interface{}) error {
 		}
 		destSlice.Set(reflect.Append(destSlice, dest))
 	}
-	if err := rows.Close(); err != nil {
-		return err
-	}
-	return nil
+	return rows.Close()
 }

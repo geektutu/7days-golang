@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"geeorm/log"
 	"geeorm/schema"
 )
 
@@ -38,7 +37,7 @@ func (s *Session) CreateTable(value interface{}) error {
 // DropTable drops a table with the name of model
 func (s *Session) DropTable(value interface{}) error {
 	table := s.RefTable(value)
-	_, err := s.Raw(fmt.Sprintf("DROP TABLE %s", table.TableName)).Exec()
+	_, err := s.Raw(fmt.Sprintf("DROP TABLE IF EXISTS %s", table.TableName)).Exec()
 	return err
 }
 
@@ -52,8 +51,6 @@ func (s *Session) HasTable(value interface{}) bool {
 	sql, values := s.dialect.TableExistSQL(tableName)
 	row := s.Raw(sql, values...).QueryRow()
 	var tmp string
-	if err := row.Scan(&tmp); err != nil {
-		log.Error(err)
-	}
+	_ = row.Scan(&tmp)
 	return tmp == tableName
 }

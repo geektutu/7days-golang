@@ -7,7 +7,7 @@ import (
 
 func TestClause_Set(t *testing.T) {
 	var clause Clause
-	clause.Set(INSERT, "User", "Name,Age")
+	clause.Set(INSERT, "User", []string{"Name", "Age"})
 	sql := clause.sql[INSERT]
 	vars := clause.sqlVars[INSERT]
 	t.Log(sql, vars)
@@ -19,7 +19,7 @@ func TestClause_Set(t *testing.T) {
 func TestClause_Build(t *testing.T) {
 	var clause Clause
 	clause.Set(LIMIT, 3)
-	clause.Set(SELECT, "User", "*")
+	clause.Set(SELECT, "User", []string{"*"})
 	orders := []Type{SELECT, LIMIT}
 	sql, vars := clause.Build(orders)
 	t.Log(sql, vars)
