@@ -2,7 +2,6 @@ package clause
 
 import (
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -29,7 +28,7 @@ func genBindVars(num int) string {
 func _insert(values ...interface{}) (string, []interface{}) {
 	// INSERT INTO $tableName ($fields)
 	tableName := values[0]
-	fields := values[1]
+	fields := strings.Join(values[1].([]string), ",")
 	return fmt.Sprintf("INSERT INTO %s (%v)", tableName, fields), []interface{}{}
 }
 
@@ -57,12 +56,11 @@ func _values(values ...interface{}) (string, []interface{}) {
 func _select(values ...interface{}) (string, []interface{}) {
 	// SELECT $fields FROM $tableName
 	tableName := values[0]
-	fields := values[1]
+	fields := strings.Join(values[1].([]string), ",")
 	return fmt.Sprintf("SELECT %v FROM %s", fields, tableName), []interface{}{}
 }
 
 func _limit(values ...interface{}) (string, []interface{}) {
 	// LIMIT $num
-	log.Println(values...)
 	return "LIMIT ?", values
 }
