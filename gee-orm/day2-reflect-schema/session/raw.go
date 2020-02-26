@@ -25,8 +25,15 @@ func New(db *sql.DB, dialect dialect.Dialect) *Session {
 	}
 }
 
+// Clear initialize the state of a session
+func (s *Session) Clear() {
+	s.sqlVars = nil
+	s.sql = ""
+}
+
 // Exec raw sql with sqlVars
 func (s *Session) Exec() (result sql.Result, err error) {
+	defer s.Clear()
 	log.Info(s.sql, s.sqlVars)
 	if result, err = s.db.Exec(s.sql, s.sqlVars...); err != nil {
 		log.Error(err)
@@ -36,12 +43,14 @@ func (s *Session) Exec() (result sql.Result, err error) {
 
 // QueryRow gets a record from db
 func (s *Session) QueryRow() *sql.Row {
+	defer s.Clear()
 	log.Info(s.sql, s.sqlVars)
 	return s.db.QueryRow(s.sql, s.sqlVars...)
 }
 
 // QueryRows gets a list of records from db
 func (s *Session) QueryRows() (rows *sql.Rows, err error) {
+	defer s.Clear()
 	log.Info(s.sql, s.sqlVars)
 	if rows, err = s.db.Query(s.sql, s.sqlVars...); err != nil {
 		log.Error(err)

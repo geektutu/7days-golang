@@ -28,7 +28,7 @@ func New(db *sql.DB, dialect dialect.Dialect) *Session {
 	}
 }
 
-// Clear initialize the state of a session, except for isAutoCommit
+// Clear initialize the state of a session
 func (s *Session) Clear() {
 	s.refTable, s.sqlVars = nil, nil
 	s.clause = clause.Clause{}

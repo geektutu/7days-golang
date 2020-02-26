@@ -34,13 +34,14 @@ type User struct {
 func transactionRollback(t *testing.T) {
 	engine := OpenDB(t)
 	defer CloseDB(engine)
-	_ = engine.NewSession().DropTable(&User{})
+	s := engine.NewSession()
+	_ = s.DropTable(&User{})
 	_, err := engine.Transaction(func(s *session.Session) (result interface{}, err error) {
 		_ = s.CreateTable(&User{})
 		_, err = s.Create(&User{"Tom", 18})
 		return nil, errors.New("Error")
 	})
-	if err == nil || engine.NewSession().HasTable("User") {
+	if err == nil || s.HasTable("User") {
 		t.Fatal("failed to rollback")
 	}
 }
@@ -48,14 +49,15 @@ func transactionRollback(t *testing.T) {
 func transactionCommit(t *testing.T) {
 	engine := OpenDB(t)
 	defer CloseDB(engine)
-	_ = engine.NewSession().DropTable(&User{})
+	s := engine.NewSession()
+	_ = s.DropTable(&User{})
 	_, err := engine.Transaction(func(s *session.Session) (result interface{}, err error) {
 		err = s.CreateTable(&User{})
 		_, err = s.Create(&User{"Tom", 18})
 		return
 	})
 	u := &User{}
-	_ = engine.NewSession().First(u)
+	_ = s.First(u)
 	if err != nil || u.Name != "Tom" {
 		t.Fatal("failed to commit")
 	}
