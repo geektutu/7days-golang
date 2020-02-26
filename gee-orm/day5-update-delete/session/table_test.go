@@ -10,9 +10,10 @@ type User struct {
 }
 
 func TestSession_CreateTable(t *testing.T) {
-	_ = NewSession().DropTable(&User{})
-	_ = NewSession().CreateTable(&User{})
-	if !NewSession().HasTable("User") {
+	s := NewSession()
+	_ = s.DropTable(&User{})
+	_ = s.CreateTable(&User{})
+	if !s.HasTable("User") {
 		t.Fatal("failed to create table User")
 	}
 }
