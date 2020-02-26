@@ -21,6 +21,10 @@ const (
 	LIMIT
 	WHERE
 	ORDERBY
+	UPDATE
+	SET
+	DELETE
+	COUNT
 )
 
 // Set adds a sub clause of specific type

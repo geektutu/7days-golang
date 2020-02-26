@@ -41,13 +41,16 @@ func (s *Session) DropTable(value interface{}) error {
 	return err
 }
 
+func (s *Session) guessTableName(value interface{}) string {
+	if tableName, ok := value.(string); ok {
+		return tableName
+	}
+	return s.RefTable(value).TableName
+}
+
 // HasTable returns true of the table exists
 func (s *Session) HasTable(value interface{}) bool {
-	tableName, ok := value.(string)
-	if !ok {
-		tableName = s.RefTable(value).TableName
-	}
-
+	tableName := s.guessTableName(value)
 	sql, values := s.dialect.TableExistSQL(tableName)
 	row := s.Raw(sql, values...).QueryRow()
 	var tmp string
