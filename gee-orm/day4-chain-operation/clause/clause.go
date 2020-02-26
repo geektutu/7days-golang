@@ -15,12 +15,12 @@ type Type int
 
 // Support types for Clause
 const (
-	INSERT  Type = 0
-	VALUES  Type = 1
-	SELECT  Type = 2
-	LIMIT   Type = 3
-	WHERE   Type = 4
-	ORDERBY Type = 5
+	INSERT Type = iota
+	VALUES
+	SELECT
+	LIMIT
+	WHERE
+	ORDERBY
 )
 
 // Set adds a sub clause of specific type

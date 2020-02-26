@@ -24,9 +24,9 @@ var (
 
 // log levels
 const (
-	InfoLevel  = 0
-	ErrorLevel = 1
-	Disabled   = 9999
+	InfoLevel = iota
+	ErrorLevel
+	Disabled
 )
 
 // SetLevel controls log level
