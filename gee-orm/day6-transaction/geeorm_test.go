@@ -17,43 +17,39 @@ func OpenDB(t *testing.T) *Engine {
 	return engine
 }
 
-func CloseDB(engine *Engine) {
-	_ = engine.Close()
-}
-
 func TestNewEngine(t *testing.T) {
 	engine := OpenDB(t)
-	_ = engine.Close()
+	defer engine.Close()
 }
 
 type User struct {
-	Name string `geeorm:"primary_key"`
+	Name string `geeorm:"PRIMARY KEY"`
 	Age  int
 }
 
 func transactionRollback(t *testing.T) {
 	engine := OpenDB(t)
-	defer CloseDB(engine)
+	defer engine.Close()
 	s := engine.NewSession()
-	_ = s.DropTable(&User{})
+	_ = s.Model(&User{}).DropTable()
 	_, err := engine.Transaction(func(s *session.Session) (result interface{}, err error) {
-		_ = s.CreateTable(&User{})
-		_, err = s.Create(&User{"Tom", 18})
+		_ = s.Model(&User{}).CreateTable()
+		_, err = s.Insert(&User{"Tom", 18})
 		return nil, errors.New("Error")
 	})
-	if err == nil || s.HasTable("User") {
+	if err == nil || s.HasTable() {
 		t.Fatal("failed to rollback")
 	}
 }
 
 func transactionCommit(t *testing.T) {
 	engine := OpenDB(t)
-	defer CloseDB(engine)
+	defer engine.Close()
 	s := engine.NewSession()
-	_ = s.DropTable(&User{})
+	_ = s.Model(&User{}).DropTable()
 	_, err := engine.Transaction(func(s *session.Session) (result interface{}, err error) {
-		err = s.CreateTable(&User{})
-		_, err = s.Create(&User{"Tom", 18})
+		_ = s.Model(&User{}).CreateTable()
+		_, err = s.Insert(&User{"Tom", 18})
 		return
 	})
 	u := &User{}

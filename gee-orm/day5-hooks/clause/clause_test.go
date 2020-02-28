@@ -34,11 +34,9 @@ func testSelect(t *testing.T) {
 
 func testUpdate(t *testing.T) {
 	var clause Clause
-	clause.Set(UPDATE, "User")
+	clause.Set(UPDATE, "User", map[string]interface{}{"Age": 30, "Name": "Tommy"})
 	clause.Set(WHERE, "Name = ?", "Tom")
-	clause.Set(SET, map[string]interface{}{"Age": 30, "Name": "Tommy"})
-
-	sql, vars := clause.Build(UPDATE, SET, WHERE)
+	sql, vars := clause.Build(UPDATE, WHERE)
 	t.Log(sql, vars)
 	if sql != "UPDATE User SET Age = ?, Name = ? WHERE Name = ?" {
 		t.Fatal("failed to build SQL")

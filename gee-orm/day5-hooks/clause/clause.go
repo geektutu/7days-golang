@@ -22,7 +22,6 @@ const (
 	WHERE
 	ORDERBY
 	UPDATE
-	SET
 	DELETE
 	COUNT
 )

@@ -6,12 +6,12 @@ import (
 )
 
 // Create one or more records in database
-func (s *Session) Create(values ...interface{}) (int64, error) {
+func (s *Session) Insert(values ...interface{}) (int64, error) {
 	recordValues := make([]interface{}, 0)
 	for _, value := range values {
-		table := s.RefTable(value)
-		s.clause.Set(clause.INSERT, table.TableName, table.FieldNames)
-		recordValues = append(recordValues, table.Values(value))
+		table := s.Model(value).RefTable()
+		s.clause.Set(clause.INSERT, table.Name, table.FieldNames)
+		recordValues = append(recordValues, table.RecordValues(value))
 	}
 
 	s.clause.Set(clause.VALUES, recordValues...)
@@ -28,9 +28,9 @@ func (s *Session) Create(values ...interface{}) (int64, error) {
 func (s *Session) Find(values interface{}) error {
 	destSlice := reflect.Indirect(reflect.ValueOf(values))
 	destType := destSlice.Type().Elem()
-	table := s.RefTable(reflect.New(destType).Elem().Interface())
+	table := s.Model(reflect.New(destType).Elem().Interface()).RefTable()
 
-	s.clause.Set(clause.SELECT, table.TableName, table.FieldNames)
+	s.clause.Set(clause.SELECT, table.Name, table.FieldNames)
 	sql, vars := s.clause.Build(clause.SELECT, clause.WHERE, clause.ORDERBY, clause.LIMIT)
 	rows, err := s.Raw(sql, vars...).QueryRows()
 	if err != nil {
