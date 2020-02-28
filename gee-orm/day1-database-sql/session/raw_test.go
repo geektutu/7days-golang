@@ -11,7 +11,7 @@ import (
 var TestDB *sql.DB
 
 func TestMain(m *testing.M) {
-	TestDB, _ = sql.Open("sqlite3", "gee.db")
+	TestDB, _ = sql.Open("sqlite3", "../gee.db")
 	code := m.Run()
 	_ = TestDB.Close()
 	os.Exit(code)
