@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-// Create one or more records in database
+// Insert one or more records in database
 func (s *Session) Insert(values ...interface{}) (int64, error) {
 	recordValues := make([]interface{}, 0)
 	for _, value := range values {
