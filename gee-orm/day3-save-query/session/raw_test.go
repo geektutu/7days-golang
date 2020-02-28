@@ -29,7 +29,7 @@ func NewSession() *Session {
 func TestSession_Exec(t *testing.T) {
 	s := NewSession()
 	_, _ = s.Raw("DROP TABLE IF EXISTS User;").Exec()
-	_, _ = s.Raw("CREATE TABLE User(name text);").Exec()
+	_, _ = s.Raw("CREATE TABLE User(Name text);").Exec()
 	result, _ := s.Raw("INSERT INTO User(`Name`) values (?), (?)", "Tom", "Sam").Exec()
 	if count, err := result.RowsAffected(); err != nil || count != 2 {
 		t.Fatal("expect 2, but got", count)
