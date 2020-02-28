@@ -32,8 +32,43 @@ func testSelect(t *testing.T) {
 	}
 }
 
+func testUpdate(t *testing.T) {
+	var clause Clause
+	clause.Set(UPDATE, "User", map[string]interface{}{"Age": 30, "Name": "Tommy"})
+	clause.Set(WHERE, "Name = ?", "Tom")
+	sql, vars := clause.Build(UPDATE, WHERE)
+	t.Log(sql, vars)
+	if sql != "UPDATE User SET Age = ?, Name = ? WHERE Name = ?" {
+		t.Fatal("failed to build SQL")
+	}
+	if !reflect.DeepEqual(vars, []interface{}{30, "Tommy", "Tom"}) {
+		t.Fatal("failed to build SQLVars")
+	}
+}
+
+func testDelete(t *testing.T) {
+	var clause Clause
+	clause.Set(DELETE, "User")
+	clause.Set(WHERE, "Name = ?", "Tom")
+
+	sql, vars := clause.Build(DELETE, WHERE)
+	t.Log(sql, vars)
+	if sql != "DELETE FROM User WHERE Name = ?" {
+		t.Fatal("failed to build SQL")
+	}
+	if !reflect.DeepEqual(vars, []interface{}{"Tom"}) {
+		t.Fatal("failed to build SQLVars")
+	}
+}
+
 func TestClause_Build(t *testing.T) {
 	t.Run("select", func(t *testing.T) {
 		testSelect(t)
+	})
+	t.Run("update", func(t *testing.T) {
+		testUpdate(t)
+	})
+	t.Run("delete", func(t *testing.T) {
+		testDelete(t)
 	})
 }

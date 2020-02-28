@@ -31,11 +31,11 @@ func NewEngine(driver, source string) (e *Engine, err error) {
 }
 
 // Close database connection
-func (engine *Engine) Close() (err error) {
-	if err = engine.db.Close(); err == nil {
-		log.Info("Close database success")
+func (engine *Engine) Close() {
+	if err := engine.db.Close(); err != nil {
+		log.Error("Failed to close database")
 	}
-	return
+	log.Info("Close database success")
 }
 
 // NewSession creates a new session for next operations

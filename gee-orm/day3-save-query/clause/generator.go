@@ -16,7 +16,7 @@ func init() {
 	generators[SELECT] = _select
 	generators[LIMIT] = _limit
 	generators[WHERE] = _where
-	generators[ORDERBY] = _orderby
+	generators[ORDERBY] = _orderBy
 }
 
 func genBindVars(num int) string {
@@ -73,6 +73,6 @@ func _where(values ...interface{}) (string, []interface{}) {
 	return fmt.Sprintf("WHERE %s", desc), vars
 }
 
-func _orderby(values ...interface{}) (string, []interface{}) {
+func _orderBy(values ...interface{}) (string, []interface{}) {
 	return fmt.Sprintf("ORDER BY %s", values[0]), []interface{}{}
 }

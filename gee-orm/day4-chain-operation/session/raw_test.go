@@ -30,7 +30,7 @@ func TestSession_Exec(t *testing.T) {
 	s := NewSession()
 	_, _ = s.Raw("DROP TABLE IF EXISTS User;").Exec()
 	_, _ = s.Raw("CREATE TABLE User(name text);").Exec()
-	result, _ := s.Raw("INSERT INTO User(`name`) values (?), (?)", "Tom", "Sam").Exec()
+	result, _ := s.Raw("INSERT INTO User(`Name`) values (?), (?)", "Tom", "Sam").Exec()
 	if count, err := result.RowsAffected(); err != nil || count != 2 {
 		t.Fatal("expect 2, but got", count)
 	}
@@ -39,7 +39,7 @@ func TestSession_Exec(t *testing.T) {
 func TestSession_QueryRows(t *testing.T) {
 	s := NewSession()
 	_, _ = s.Raw("DROP TABLE IF EXISTS User;").Exec()
-	_, _ = s.Raw("CREATE TABLE User(name text);").Exec()
+	_, _ = s.Raw("CREATE TABLE User(Name text);").Exec()
 	row := s.Raw("SELECT count(*) FROM User").QueryRow()
 	var count int
 	if err := row.Scan(&count); err != nil || count != 0 {

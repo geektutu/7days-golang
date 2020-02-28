@@ -1,7 +1,6 @@
 package schema
 
 import (
-	"fmt"
 	"geeorm/dialect"
 	"go/ast"
 	"reflect"
@@ -10,20 +9,26 @@ import (
 // Field represents a column of database
 type Field struct {
 	Name string
+	Type string
 	Tag  string
 }
 
 // Schema represents a table of database
 type Schema struct {
-	TableName    string
-	PrimaryField *Field
-	Fields       []*Field
-	FieldNames   []string
-	BindVars     []string
+	Model      interface{}
+	Name       string
+	Fields     []*Field
+	FieldNames []string
+	fieldMap   map[string]*Field
+}
+
+// GetField returns field by name
+func (schema *Schema) GetField(name string) *Field {
+	return schema.fieldMap[name]
 }
 
 // Values return the values of dest's member variables
-func (schema *Schema) Values(dest interface{}) []interface{} {
+func (schema *Schema) RecordValues(dest interface{}) []interface{} {
 	destValue := reflect.Indirect(reflect.ValueOf(dest))
 	var fieldValues []interface{}
 	for _, field := range schema.Fields {
@@ -36,8 +41,9 @@ func (schema *Schema) Values(dest interface{}) []interface{} {
 func Parse(dest interface{}, d dialect.Dialect) *Schema {
 	modelType := reflect.Indirect(reflect.ValueOf(dest)).Type()
 	schema := &Schema{
-		TableName:    modelType.Name(),
-		PrimaryField: &Field{Name: "ID", Tag: ""},
+		Model:    dest,
+		Name:     modelType.Name(),
+		fieldMap: make(map[string]*Field),
 	}
 
 	for i := 0; i < modelType.NumField(); i++ {
@@ -45,25 +51,15 @@ func Parse(dest interface{}, d dialect.Dialect) *Schema {
 		if !p.Anonymous && ast.IsExported(p.Name) {
 			field := &Field{
 				Name: p.Name,
-				Tag:  d.DataTypeOf(reflect.Indirect(reflect.New(p.Type))),
+				Type: d.DataTypeOf(reflect.Indirect(reflect.New(p.Type))),
 			}
-			if v, ok := p.Tag.Lookup("geeorm"); ok && v == "primary_key" {
-				schema.PrimaryField = field
+			if v, ok := p.Tag.Lookup("geeorm"); ok {
+				field.Tag = v
 			}
 			schema.Fields = append(schema.Fields, field)
 			schema.FieldNames = append(schema.FieldNames, p.Name)
-			schema.BindVars = append(schema.BindVars, "?")
+			schema.fieldMap[p.Name] = field
 		}
 	}
 	return schema
-}
-
-// String returns readable string
-func (field *Field) String() string {
-	return fmt.Sprintf("(%s %s)", field.Name, field.Tag)
-}
-
-// String returns readable string
-func (schema *Schema) String() string {
-	return fmt.Sprintf("TABLE %s %v", schema.TableName, schema.Fields)
 }

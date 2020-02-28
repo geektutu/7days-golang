@@ -6,7 +6,7 @@ import (
 )
 
 type User struct {
-	Name string `geeorm:"primary_key"`
+	Name string `geeorm:"PRIMARY KEY"`
 	Age  int
 }
 
@@ -14,18 +14,17 @@ var TestDial, _ = dialect.GetDialect("sqlite3")
 
 func TestParse(t *testing.T) {
 	schema := Parse(&User{}, TestDial)
-	if schema.TableName != "User" || len(schema.Fields) != 2 {
+	if schema.Name != "User" || len(schema.Fields) != 2 {
 		t.Fatal("failed to parse User struct")
 	}
-	if schema.PrimaryField.Name != "Name" {
+	if schema.GetField("Name").Tag != "PRIMARY KEY" {
 		t.Fatal("failed to parse primary key")
 	}
-	t.Log(schema)
 }
 
-func TestSchema_Values(t *testing.T) {
+func TestSchema_RecordValues(t *testing.T) {
 	schema := Parse(&User{}, TestDial)
-	values := schema.Values(&User{"Tom", 18})
+	values := schema.RecordValues(&User{"Tom", 18})
 
 	name := values[0].(string)
 	age := values[1].(int)
