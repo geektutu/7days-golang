@@ -280,8 +280,7 @@ func main() {
 		8003: "http://localhost:8003",
 	}
 
-	addrs := make([]string, 3)
-
+	var addrs []string
 	for _, v := range addrMap {
 		addrs = append(addrs, v)
 	}
