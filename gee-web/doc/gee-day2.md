@@ -134,14 +134,14 @@ func (c *Context) SetHeader(key string, value string) {
 }
 
 func (c *Context) String(code int, format string, values ...interface{}) {
-	c.Status(code)
 	c.SetHeader("Content-Type", "text/plain")
+	c.Status(code)
 	c.Writer.Write([]byte(fmt.Sprintf(format, values...)))
 }
 
 func (c *Context) JSON(code int, obj interface{}) {
-	c.Status(code)
 	c.SetHeader("Content-Type", "application/json")
+	c.Status(code)
 	encoder := json.NewEncoder(c.Writer)
 	if err := encoder.Encode(obj); err != nil {
 		http.Error(c.Writer, err.Error(), 500)
@@ -154,8 +154,8 @@ func (c *Context) Data(code int, data []byte) {
 }
 
 func (c *Context) HTML(code int, html string) {
-	c.Status(code)
 	c.SetHeader("Content-Type", "text/html")
+	c.Status(code)
 	c.Writer.Write([]byte(html))
 }
 ```

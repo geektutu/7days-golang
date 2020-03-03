@@ -114,8 +114,8 @@ type Context struct {
 }
 
 func (c *Context) HTML(code int, name string, data interface{}) {
-	c.Writer.WriteHeader(code)
-	c.Writer.Header().Set("Content-Type", "text/html")
+	c.SetHeader("Content-Type", "text/html")
+	c.Status(code)
 	if err := c.engine.htmlTemplates.ExecuteTemplate(c.Writer, name, data); err != nil {
 		c.Fail(500, err.Error())
 	}

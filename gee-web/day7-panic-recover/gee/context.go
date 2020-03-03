@@ -71,14 +71,14 @@ func (c *Context) SetHeader(key string, value string) {
 }
 
 func (c *Context) String(code int, format string, values ...interface{}) {
-	c.Status(code)
 	c.SetHeader("Content-Type", "text/plain")
+	c.Status(code)
 	c.Writer.Write([]byte(fmt.Sprintf(format, values...)))
 }
 
 func (c *Context) JSON(code int, obj interface{}) {
-	c.Status(code)
 	c.SetHeader("Content-Type", "application/json")
+	c.Status(code)
 	encoder := json.NewEncoder(c.Writer)
 	if err := encoder.Encode(obj); err != nil {
 		http.Error(c.Writer, err.Error(), 500)
@@ -93,8 +93,8 @@ func (c *Context) Data(code int, data []byte) {
 // HTML template render
 // refer https://golang.org/pkg/html/template/
 func (c *Context) HTML(code int, name string, data interface{}) {
-	c.Writer.WriteHeader(code)
-	c.Writer.Header().Set("Content-Type", "text/html")
+	c.SetHeader("Content-Type", "text/html")
+	c.Status(code)
 	if err := c.engine.htmlTemplates.ExecuteTemplate(c.Writer, name, data); err != nil {
 		c.Fail(500, err.Error())
 	}
