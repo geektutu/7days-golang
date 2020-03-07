@@ -35,7 +35,7 @@ func _insert(values ...interface{}) (string, []interface{}) {
 }
 
 func _values(values ...interface{}) (string, []interface{}) {
-	// VALUES ($v1), (&v2), ...
+	// VALUES ($v1), ($v2), ...
 	var bindStr string
 	var sql strings.Builder
 	var vars []interface{}

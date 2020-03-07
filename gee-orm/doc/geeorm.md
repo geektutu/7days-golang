@@ -135,3 +135,4 @@ gorm 正在彻底重构 v1 版本，短期内看不到发布 v2 的可能。相�
 
 - [Go 语言简明教程](https://geektutu.com/post/quick-golang.html)
 - [Go Test 单元测试简明教程](https://geektutu.com/post/quick-go-test.html)
+- [SQLite 常用命令速查表](https://geektutu.com/post/cheat-sheet-sqlite.html)
