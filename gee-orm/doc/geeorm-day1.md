@@ -1,6 +1,6 @@
 ---
 title: 动手写ORM框架 - GeeORM第一天 database/sql 基础
-date: 2020-03-03 23:00:00
+date: 2020-03-07 23:00:00
 description: 7天用 Go语言/golang 从零实现 ORM 框架 GeeORM 教程(7 days implement golang object relational mapping framework from scratch tutorial)，动手写 ORM 框架，参照 gorm, xorm 的实现。介绍了 SQLite 的基础操作（连接数据库，创建表、增删记录等），使用 Go 标准库 database/sql 操作 SQLite 数据库，包括执行(Exec)，查询(Query, QueryRow)。
 tags:
 - Go
@@ -305,7 +305,7 @@ func (s *Session) QueryRows() (rows *sql.Rows, err error) {
 - 封装有 2 个目的，一是统一打印日志（包括 执行的SQL 语句和错误日志）。
 - 二是执行完成后，清空 `(s *Session).sql` 和 `(s *Session).sqlVars` 两个变量。这样 Session 可以复用，开启一次会话，可以执行多次 SQL。
 
-## 4 核心结构 Engine
+## 5 核心结构 Engine
 
 Session 负责与数据库的交互，那交互前的准备工作（比如连接/测试数据库），交互后的收尾工作（关闭连接）等就交给 Engine 来负责了。Engine 是 GeeORM 与用户交互的入口。代码位于根目录的 `geeorm.go`。
 
@@ -370,7 +370,7 @@ day1-database-sql/
     |--go.mod 
 ```
 
-## 5 测试
+## 6 测试
 
 GeeORM 的单元测试是比较完备的，可以参考 `log_test.go`、`raw_test.go` 和 `geeorm_test.go` 等几个测试文件，在这里呢，就不一一讲解了。接下来呢，我们将 geeorm 视为第三方库来使用。
 
