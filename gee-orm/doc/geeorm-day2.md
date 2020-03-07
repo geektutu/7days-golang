@@ -238,7 +238,7 @@ func TestParse(t *testing.T) {
 }
 ```
 
-## Session
+## 3 Session
 
 Session 的核心功能是与数据库进行交互。因此，我们将数据库表的增/删操作实现在子包 session 中。在此之前，Session 的结构需要做一些调整。
 
@@ -332,7 +332,7 @@ func TestSession_CreateTable(t *testing.T) {
 }
 ```
 
-## Engine
+## 4 Engine
 
 因为 Session 构造函数增加了对 dialect 的依赖，Engine 需要作一些细微的调整。
 
@@ -384,4 +384,4 @@ func (engine *Engine) NewSession() *session.Session {
 
 - [Go 语言简明教程](https://geektutu.com/post/quick-golang.html)
 - [Go Test 单元测试简明教程](https://geektutu.com/post/quick-go-test.html)
-- [SQLite 常用命令](https://geektutu.com/post/cheat-sheet-sqlite.html)
+- [SQLite 常用命令速查表](https://geektutu.com/post/cheat-sheet-sqlite.html)

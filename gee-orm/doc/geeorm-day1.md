@@ -411,4 +411,4 @@ func main() {
 
 - [Go 语言简明教程](https://geektutu.com/post/quick-golang.html)
 - [Go Test 单元测试简明教程](https://geektutu.com/post/quick-go-test.html)
-- [SQLite 常用命令](https://geektutu.com/post/cheat-sheet-sqlite.html)
+- [SQLite 常用命令速查表](https://geektutu.com/post/cheat-sheet-sqlite.html)
