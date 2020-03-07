@@ -18,7 +18,7 @@ func TestMain(m *testing.M) {
 }
 
 func NewSession() *Session {
-	return &Session{db: TestDB}
+	return New(TestDB)
 }
 
 func TestSession_Exec(t *testing.T) {

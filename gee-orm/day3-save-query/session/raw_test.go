@@ -23,9 +23,8 @@ func TestMain(m *testing.M) {
 }
 
 func NewSession() *Session {
-	return &Session{db: TestDB, dialect: TestDial}
+	return New(TestDB, TestDial)
 }
-
 func TestSession_Exec(t *testing.T) {
 	s := NewSession()
 	_, _ = s.Raw("DROP TABLE IF EXISTS User;").Exec()
