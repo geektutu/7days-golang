@@ -1,5 +1,5 @@
 ---
-title: 动手写ORM框架 - GeeORM第三天 插入和查询记录
+title: 动手写ORM框架 - GeeORM第三天 记录新增和查询
 date: 2020-03-08 01:00:00
 description: 7天用 Go语言/golang 从零实现 ORM 框架 GeeORM 教程(7 days implement golang object relational mapping framework from scratch tutorial)，动手写 ORM 框架，参照 gorm, xorm 的实现。实现新增(insert)记录的功能；使用反射(reflect)将数据库的记录转换为对应的结构体实例，实现查询(select)功能。
 tags:
@@ -22,7 +22,7 @@ published: false
 本文是[7天用Go从零实现ORM框架GeeORM](https://geektutu.com/post/geeorm.html)的第三篇。
 
 - 实现新增(insert)记录的功能。
-- 使用反射(reflect)将数据库的记录转换为对应的结构体实例，实现查询(select)功能。
+- 使用反射(reflect)将数据库的记录转换为对应的结构体实例，实现查询(select)功能。**代码约150行**
 
 ## 1 Clause 构造 SQL 语句
 
@@ -202,6 +202,26 @@ func TestClause_Build(t *testing.T) {
 
 ## 2 实现 Insert 功能
 
+首先为 Session 添加成员变量 clause
+
+```go
+// session/raw.go
+type Session struct {
+	db       *sql.DB
+	dialect  dialect.Dialect
+	refTable *schema.Schema
+	clause   clause.Clause
+	sql      strings.Builder
+	sqlVars  []interface{}
+}
+
+func (s *Session) Clear() {
+	s.sql.Reset()
+	s.sqlVars = nil
+	s.clause = clause.Clause{}
+}
+```
+
 clause 已经支持生成简单的插入(INSERT) 和 查询(SELECT) 的 SQL 语句，那么紧接着我们就可以在 session 中实现对应的功能了。
 
 INSERT 对应的 SQL 语句一般是这样的：
@@ -216,7 +236,7 @@ INSERT INTO table_name(col1, col2, col3, ...) VALUES
 在 ORM 框架中期望 Insert 的调用方式如下：
 
 ```go
-s := geeorm.NewEngine().NewSession()
+s := geeorm.NewEngine("sqlite3", "gee.db").NewSession()
 u1 := &User{Name: "Tom", Age: 18}
 u2 := &User{Name: "Sam", Age: 25}
 s.Insert(u1, u2, ...)
@@ -282,7 +302,7 @@ func (s *Session) Insert(values ...interface{}) (int64, error) {
 期望的调用方式是这样的：传入一个切片指针，查询的结果保存在切片中。
 
 ```go
-s := geeorm.NewEngine().NewSession()
+s := geeorm.NewEngine("sqlite3", "gee.db").NewSession()
 var users []User
 s.Find(&users);
 ```

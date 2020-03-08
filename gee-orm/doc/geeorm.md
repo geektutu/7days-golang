@@ -122,13 +122,13 @@ gorm 正在彻底重构 v1 版本，短期内看不到发布 v2 的可能。相�
 
 ## 3 目录
 
-- 第一天：database/sql 基础 | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day1-database-sql)
-- 第二天：对象表结构映射 | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day2-reflect-schema)
-- 第三天：插入/查询记录 | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day3-save-query)
-- 第四天：链式操作与更新删除 | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day4-chain-operation)
-- 第五天：实现钩子(Hooks) | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day5-hooks)
-- 第六天：支持事务(Transaction) | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day6-transaction)
-- 第七天：数据库迁移(Migrate) | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day7-migrate)
+- 第一天：[database/sql 基础](https://geektutu.com/post/geeorm-day1.html) | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day1-database-sql)
+- 第二天：[对象表结构映射](https://geektutu.com/post/geeorm-day2.html) | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day2-reflect-schema)
+- 第三天：[记录新增和查询](https://geektutu.com/post/geeorm-day3.html) | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day3-save-query)
+- 第四天：[链式操作与更新删除](https://geektutu.com/post/geeorm-day4.html) | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day4-chain-operation)
+- 第五天：[实现钩子(Hooks)](https://geektutu.com/post/geeorm-day5.html) | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day5-hooks)
+- 第六天：[支持事务(Transaction)](https://geektutu.com/post/geeorm-day6.html) | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day6-transaction)
+- 第七天：[数据库迁移(Migrate)](https://geektutu.com/post/geeorm-day7.html) | [Code](https://github.com/geektutu/7days-golang/blob/master/gee-orm/day7-migrate)
 
 
 ## 附 推荐阅读
