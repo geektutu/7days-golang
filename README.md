@@ -42,13 +42,13 @@
 
 gorm 准备推出完全重写的 v2 版本(目前还在开发中)，相对 gorm-v1 来说，xorm 的设计更容易理解，所以 geeorm 接口设计上主要参考了 xorm，一些细节实现上参考了 gorm。
 
-- 第一天：database/sql 基础 | [Code](gee-orm/day1-database-sql)
-- 第二天：对象表结构映射 | [Code](gee-orm/day2-reflect-schema)
-- 第三天：插入/查询记录 | [Code](gee-orm/day3-save-query)
-- 第四天：链式操作与更新删除 | [Code](gee-orm/day4-chain-operation)
-- 第五天：实现钩子(Hooks) | [Code](gee-orm/day5-hooks)
-- 第六天：支持事务(Transaction) | [Code](gee-orm/day6-transaction)
-- 第七天：数据库迁移(Migrate) | [Code](gee-orm/day7-migrate)
+- 第一天：[database/sql 基础](https://geektutu.com/post/geeorm-day1.html) | [Code](gee-orm/day1-database-sql)
+- 第二天：[对象表结构映射](https://geektutu.com/post/geeorm-day2.html) | [Code](gee-orm/day2-reflect-schema)
+- 第三天：[记录新增和查询](https://geektutu.com/post/geeorm-day3.html) | [Code](gee-orm/day3-save-query)
+- 第四天：[链式操作与更新删除](https://geektutu.com/post/geeorm-day4.html) | [Code](gee-orm/day4-chain-operation)
+- 第五天：[实现钩子(Hooks)](https://geektutu.com/post/geeorm-day5.html) | [Code](gee-orm/day5-hooks)
+- 第六天：[支持事务(Transaction)](https://geektutu.com/post/geeorm-day6.html) | [Code](gee-orm/day6-transaction)
+- 第七天：[数据库迁移(Migrate)](https://geektutu.com/post/geeorm-day7.html) | [Code](gee-orm/day7-migrate)
 
 ### WebAssembly 使用示例
 

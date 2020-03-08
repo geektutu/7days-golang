@@ -22,7 +22,7 @@ github: https://github.com/geektutu/7days-golang
 
 - 使用 dialect 隔离不同数据库之间的差异，便于扩展。
 - 使用反射(reflect)获取任意 struct 对象的名称和字段，映射为数据中的表。
-- 数据库表的创建(create)、删除(drop)。
+- 数据库表的创建(create)、删除(drop)。**代码约150行**
 
 ## 1 Dialect
 
