@@ -18,7 +18,7 @@ github: https://github.com/geektutu/7days-golang
 
 本文是 [7天用Go从零实现Web框架Gee教程系列](https://geektutu.com/post/gee.html)的第三篇。
 
-- 使用 Tire 树实现动态路由(dynamic route)解析。
+- 使用 Trie 树实现动态路由(dynamic route)解析。
 - 支持两种模式`:name`和`*filepath`，**代码约150行**。
 
 ## Trie 树简介

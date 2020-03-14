@@ -106,7 +106,7 @@ func (engine *Engine) Migrate(value interface{}) error {
 
 		for _, col := range addCols {
 			f := table.GetField(col)
-			sqlStr := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s;", table.Name, f.Name, f.Tag)
+			sqlStr := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s;", table.Name, f.Name, f.Type)
 			if _, err = s.Raw(sqlStr).Exec(); err != nil {
 				return
 			}
