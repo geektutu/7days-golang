@@ -12,7 +12,7 @@
 
 - [第一天：前置知识(http.Handler接口)](https://geektutu.com/post/gee-day1.html)
 - [第二天：上下文设计(Context)](https://geektutu.com/post/gee-day2.html)
-- [第三天：Tire树路由(Router)](https://geektutu.com/post/gee-day3.html)
+- [第三天：Trie树路由(Router)](https://geektutu.com/post/gee-day3.html)
 - [第四天：分组控制(Group)](https://geektutu.com/post/gee-day4.html)
 - [第五天：中间件(Middleware)](https://geektutu.com/post/gee-day5.html)
 - [第六天：HTML模板(Template)](https://geektutu.com/post/gee-day6.html)
