@@ -11,6 +11,7 @@ keywords:
 - Go语言
 - 从零实现分布式缓存
 - 动手写分布式缓存
+top: 2
 image: post/geecache/geecache_sm.jpg
 github: https://github.com/geektutu/7days-golang
 ---
