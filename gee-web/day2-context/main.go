@@ -23,9 +23,10 @@ $ curl "http://localhost:9999/xxx"
 */
 
 import (
+	//"gee"
 	"net/http"
 
-	"code/7days-golang/gee-web/day2-context/gee"
+	"7days-golang/gee-web/day2-context/gee"
 )
 
 func main() {
