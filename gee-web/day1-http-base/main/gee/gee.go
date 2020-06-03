@@ -1,31 +1,27 @@
 package gee
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 )
 
 // HandlerFunc defines the request handler used by gee
 // 定义了路由映射处理方法，用户可自定义使用
-type HandlerFunc func(http.ResponseWriter, *http.Request)
+type HandlerFunc func(*Context)
 
 // Engine implement the interface of ServeHTTP
 // 放置路由表将路由与handler映射
 type Engine struct {
-	router map[string]HandlerFunc
+	router *router
 }
 
 // New is the constructor of gee.Engine
 func New() *Engine {
-	return &Engine{router: make(map[string]HandlerFunc)}
+	return &Engine{newRouter()}
 }
 
 // 被GET和POST封装的底层func，用请求方法与路由生成key映射handler
 func (engine *Engine) addRoute(method string, pattern string, handler HandlerFunc) {
-	key := method + "-" + pattern
-	log.Printf("Route %4s - %s", method, pattern)
-	engine.router[key] = handler
+	engine.router.addRoute(method, pattern, handler)
 }
 
 // GET defines the method to add GET request
@@ -46,11 +42,8 @@ func (engine *Engine) Run(addr string) (err error) {
 }
 
 // 执行注册的方法，否则返回404
+// 此接口接管所有http请求
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	key := req.Method + "-" + req.URL.Path
-	if handler, ok := engine.router[key]; ok {
-		handler(w, req)
-	} else {
-		fmt.Fprintf(w, "404 NOT FOUND: %s\n", req.URL)
-	}
+	c := newContext(w, req)
+	engine.router.handle(c)
 }
