@@ -73,6 +73,7 @@ func (group *RouterGroup) addRoute(method string, comp string, handler HandlerFu
 	group.engine.router.addRoute(method, pattern, handler)
 }
 
+// 所谓的中间件插口，用户如果自定义了中间件，可以用Use在代码中使用
 func (group *RouterGroup) Use(middlewares ...HandlerFunc) {
 	group.middlewares = append(group.middlewares, middlewares...)
 }
