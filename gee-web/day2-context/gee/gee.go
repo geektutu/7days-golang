@@ -1,8 +1,10 @@
 package gee
 
 import (
+	"html/template"
 	"log"
 	"net/http"
+	"path"
 	"strings"
 )
 
@@ -17,9 +19,12 @@ type RouterGroup struct {
 
 // Engine implement the interface of ServeHTTP
 type Engine struct {
-	*RouterGroup                //包含RouterGroup中的所有方法，可直接引用
-	router       *router        // 所有的路由
-	groups       []*RouterGroup // store all groups
+	*RouterGroup                     //包含RouterGroup中的所有方法，可直接引用
+	router        *router            // 所有的路由
+	groups        []*RouterGroup     // store all groups
+
+	htmlTemplates *template.Template //for html render
+	funcMap       template.FuncMap   //for html render
 }
 
 // New is the constructor of gee.Engine
@@ -64,6 +69,7 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	c := newContext(w, req)
 	c.handlers = middlewares
+	c.engine = engine // 实例化赋值
 	engine.router.handle(c)
 }
 
@@ -77,3 +83,36 @@ func (group *RouterGroup) addRoute(method string, comp string, handler HandlerFu
 func (group *RouterGroup) Use(middlewares ...HandlerFunc) {
 	group.middlewares = append(group.middlewares, middlewares...)
 }
+
+//static handler
+func (group *RouterGroup) creatStaticHandler(relativePath string, fs http.FileSystem) HandlerFunc {
+	absolutePath := path.Join(group.prefix, relativePath)
+	fileServer := http.StripPrefix(absolutePath, http.FileServer(fs))
+	return func(c *Context) {
+		file := c.Param("filepath")
+		if _, err := fs.Open(file); err != nil {
+			c.Status(http.StatusNotFound)
+			return
+		}
+
+		fileServer.ServeHTTP(c.Writer, c.Req)
+	}
+}
+
+// server static files
+func (group *RouterGroup) Static(relativePath string, root string) {
+	handler := group.creatStaticHandler(relativePath, http.Dir(root))
+	urlPattern := path.Join(relativePath, "/*filepath")
+	// Register GET handlers
+	group.GET(urlPattern, handler)
+}
+
+// html
+func (engine *Engine) SetFuncMap(funcMap template.FuncMap){
+	engine.funcMap = funcMap
+}
+
+func (engine *Engine) LoadHTMLGlob(pattern string){
+	engine.htmlTemplates = template.Must(template.New("").Funcs(engine.funcMap).ParseGlob(pattern))
+}
+
