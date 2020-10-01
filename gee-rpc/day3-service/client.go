@@ -34,7 +34,8 @@ func (call *Call) done() {
 // multiple goroutines simultaneously.
 type Client struct {
 	cc      codec.Codec
-	sending sync.Mutex // protect sending a complete request
+	sending sync.Mutex // protect following
+	header  codec.Header
 	mu      sync.Mutex // protect following
 	seq     uint64
 	pending map[uint64]*Call
@@ -101,14 +102,12 @@ func (client *Client) send(call *Call) {
 	}
 
 	// prepare request header
-	h, _ := codec.HeaderPool.Get().(*codec.Header)
-	h.ServiceMethod = call.ServiceMethod
-	h.Seq = seq
-	h.Error = ""
-	defer codec.HeaderPool.Put(h)
+	client.header.ServiceMethod = call.ServiceMethod
+	client.header.Seq = seq
+	client.header.Error = ""
 
 	// encode and send the request
-	if err := client.cc.Write(h, call.Args); err != nil {
+	if err := client.cc.Write(&client.header, call.Args); err != nil {
 		call := client.removeCall(seq)
 		// call may be nil, it usually means that Write partially failed,
 		// client has received the response and handled
@@ -120,9 +119,9 @@ func (client *Client) send(call *Call) {
 }
 
 func (client *Client) receive() {
-	var h codec.Header
 	var err error
 	for err == nil {
+		var h codec.Header
 		if err = client.cc.ReadHeader(&h); err != nil {
 			break
 		}
