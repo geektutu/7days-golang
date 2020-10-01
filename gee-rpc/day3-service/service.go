@@ -4,26 +4,28 @@ import (
 	"go/ast"
 	"log"
 	"reflect"
+	"sync/atomic"
 )
 
 type methodType struct {
 	method    reflect.Method
 	argType   reflect.Type
 	replyType reflect.Type
+	numCalls  uint64
 }
 
-func (m *methodType) NewArg() reflect.Value {
+func (m *methodType) newArgv() reflect.Value {
 	var argv reflect.Value
 	// arg may be a pointer type, or a value type
 	if m.argType.Kind() == reflect.Ptr {
 		argv = reflect.New(m.argType.Elem())
 	} else {
-		argv = reflect.New(m.argType)
+		argv = reflect.New(m.argType).Elem()
 	}
 	return argv
 }
 
-func (m *methodType) NewReply() interface{} {
+func (m *methodType) newReplyv() reflect.Value {
 	// reply must be a pointer type
 	replyv := reflect.New(m.replyType.Elem())
 	switch m.replyType.Elem().Kind() {
@@ -50,6 +52,7 @@ func newService(rcvr interface{}) *service {
 	if !ast.IsExported(s.name) {
 		log.Fatalf("rpc server: %s is not a valid service name", s.name)
 	}
+	s.registerMethods()
 	return s
 }
 
@@ -64,7 +67,6 @@ func (s *service) registerMethods() {
 		if mType.Out(0) != reflect.TypeOf((*error)(nil)).Elem() {
 			continue
 		}
-
 		argType, replyType := mType.In(1), mType.In(2)
 		if !isExportedOrBuiltinType(argType) || !isExportedOrBuiltinType(replyType) {
 			continue
@@ -78,12 +80,9 @@ func (s *service) registerMethods() {
 	}
 }
 
-func (s *service) call(mType methodType, argv, replyv reflect.Value) error {
-	f := mType.method.Func
-	// if argv is not a ptr, need to indirect before calling.
-	if mType.argType.Kind() != reflect.Ptr {
-		argv = argv.Elem()
-	}
+func (s *service) call(m *methodType, argv, replyv reflect.Value) error {
+	atomic.AddUint64(&m.numCalls, 1)
+	f := m.method.Func
 	returnValues := f.Call([]reflect.Value{s.rcvr, argv, replyv})
 	if errInter := returnValues[0].Interface(); errInter != nil {
 		return errInter.(error)
