@@ -36,7 +36,7 @@ func main() {
 
 	cc := codec.NewGobCodec(conn)
 	// send request & receive response
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 5; i++ {
 		h := &codec.Header{
 			ServiceMethod: "Foo.Sum",
 			Seq:           uint64(i),

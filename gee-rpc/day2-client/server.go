@@ -63,18 +63,16 @@ func (server *Server) ServeConn(conn io.ReadWriteCloser) {
 var invalidRequest = struct{}{}
 
 func (server *Server) serveCodec(cc codec.Codec) {
-	sending := new(sync.Mutex) // ensure header and argv is not separated by other response
+	sending := new(sync.Mutex) // make sure to send a complete response
 	wg := new(sync.WaitGroup)  // wait until all request are handled
 	for {
-		req, keepReading, err := server.readRequest(cc)
+		req, err := server.readRequest(cc)
 		if err != nil {
-			if !keepReading {
+			if req == nil {
 				break // it's not possible to recover, so close the connection
 			}
-			if req != nil {
-				req.h.Error = err.Error()
-				server.sendResponse(cc, req.h, invalidRequest, sending)
-			}
+			req.h.Error = err.Error()
+			server.sendResponse(cc, req.h, invalidRequest, sending)
 			continue
 		}
 		wg.Add(1)
@@ -90,47 +88,31 @@ type request struct {
 	argv, replyv reflect.Value // argv and replyv of request
 }
 
-var requestPool = sync.Pool{
-	New: func() interface{} { return &request{} },
-}
-
-func (server *Server) readRequestHeader(cc codec.Codec) (req *request, keepReading bool, err error) {
-	req, _ = requestPool.Get().(*request)
+func (server *Server) readRequestHeader(cc codec.Codec) (*codec.Header, error) {
 	h, _ := codec.HeaderPool.Get().(*codec.Header)
-	if err = cc.ReadHeader(h); err != nil {
-		// client closed the connection
-		if err == io.EOF || err != io.ErrUnexpectedEOF {
-			return
+	if err := cc.ReadHeader(h); err != nil {
+		codec.HeaderPool.Put(h)
+		if err != io.EOF && err != io.ErrUnexpectedEOF {
+			log.Println("rpc server: read header error:", err)
 		}
-		log.Println("rpc server: read header error:", err)
-		return
+		return nil, err
 	}
-	// We read the header successfully. If we see an error now,
-	// we can still recover and move on to the next request.
-	keepReading = true
-	req.h = h
-	return
+	return h, nil
 }
 
-func (server *Server) readRequest(cc codec.Codec) (req *request, keepReading bool, err error) {
-	req, keepReading, err = server.readRequestHeader(cc)
+func (server *Server) readRequest(cc codec.Codec) (*request, error) {
+	h, err := server.readRequestHeader(cc)
 	if err != nil {
-		// discard argv
-		_ = cc.ReadBody(nil)
-		return
+		return nil, err
 	}
-
-	// We read the header successfully. If we see an error now,
-	// we can still recover and move on to the next request.
-	keepReading = true
-
-	// TODO: now we can't judge the type of request argv
+	req := &request{h: h}
+	// TODO: now we don't know the type of request argv
 	// day 1, just suppose it's string
 	req.argv = reflect.New(reflect.TypeOf(""))
 	if err = cc.ReadBody(req.argv.Interface()); err != nil {
 		log.Println("rpc server: read argv err:", err)
 	}
-	return
+	return req, nil
 }
 
 func (server *Server) sendResponse(cc codec.Codec, h *codec.Header, body interface{}, sending *sync.Mutex) {
@@ -139,17 +121,16 @@ func (server *Server) sendResponse(cc codec.Codec, h *codec.Header, body interfa
 	if err := cc.Write(h, body); err != nil {
 		log.Println("rpc server: write response error:", err)
 	}
+	codec.HeaderPool.Put(h) // recycle Header object
 }
 
 func (server *Server) handleRequest(cc codec.Codec, req *request, sending *sync.Mutex, wg *sync.WaitGroup) {
 	// TODO, should call registered rpc methods to get the right replyv
 	// day 1, just print argv and send a hello message
 	defer wg.Done()
-	defer codec.HeaderPool.Put(req.h) // recycle Header object
 	log.Println(req.h, req.argv.Elem())
 	req.replyv = reflect.ValueOf(fmt.Sprintf("geerpc resp %d", req.h.Seq))
 	server.sendResponse(cc, req.h, req.replyv.Interface(), sending)
-
 }
 
 // Accept accepts connections on the listener and serves requests
