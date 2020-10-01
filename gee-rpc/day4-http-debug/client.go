@@ -5,6 +5,7 @@
 package geerpc
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,12 +13,13 @@ import (
 	"io"
 	"log"
 	"net"
+	"net/http"
 	"sync"
 )
 
 // Call represents an active RPC.
 type Call struct {
-	ServiceMethod string      // format "<service>.<method>"
+	ServiceMethod string      // format "<service>.<Method>"
 	Args          interface{} // arguments to the function
 	Reply         interface{} // reply from the function
 	Error         error       // if error occurs, it will be set
@@ -216,4 +218,37 @@ func Dial(network, address string, opts ...*Options) (*Client, error) {
 		return nil, err
 	}
 	return NewClient(conn, opt)
+}
+
+// DialHTTP connects to an HTTP RPC server at the specified network address
+// listening on the default HTTP RPC path.
+func DialHTTP(network, address string, opts ...*Options) (*Client, error) {
+	return DialHTTPPath(network, address, defaultRPCPath, opts...)
+}
+
+// DialHTTPPath connects to an HTTP RPC server
+// at the specified network address and path.
+func DialHTTPPath(network, address, path string, opts ...*Options) (*Client, error) {
+	opt := defaultOptions
+	if len(opts) > 0 && opts[0] != nil {
+		opt = opts[0]
+	}
+	var err error
+	conn, err := net.Dial(network, address)
+	if err != nil {
+		return nil, err
+	}
+	_, _ = io.WriteString(conn, fmt.Sprintf("CONNECT %s HTTP/1.0\n\n", path))
+
+	// Require successful HTTP response
+	// before switching to RPC protocol.
+	resp, err := http.ReadResponse(bufio.NewReader(conn), &http.Request{Method: "CONNECT"})
+	if err == nil && resp.Status == connected {
+		return NewClient(conn, opt)
+	}
+	if err == nil {
+		err = errors.New("unexpected HTTP response: " + resp.Status)
+	}
+	_ = conn.Close()
+	return nil, err
 }

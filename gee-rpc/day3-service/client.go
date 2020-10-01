@@ -205,16 +205,15 @@ func newClientCodec(cc codec.Codec) *Client {
 	return client
 }
 
-// DialWithOptions connects to an RPC server at the specified network address
-func DialWithOptions(network, address string, opt *Options) (*Client, error) {
+// Dial connects to an RPC server at the specified network address
+func Dial(network, address string, opts ...*Options) (*Client, error) {
+	opt := defaultOptions
+	if len(opts) > 0 && opts[0] != nil {
+		opt = opts[0]
+	}
 	conn, err := net.Dial(network, address)
 	if err != nil {
 		return nil, err
 	}
 	return NewClient(conn, opt)
-}
-
-// Dial connects to an RPC server at the specified network address
-func Dial(network, address string) (*Client, error) {
-	return DialWithOptions(network, address, defaultOptions)
 }
