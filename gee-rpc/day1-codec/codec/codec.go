@@ -2,17 +2,12 @@ package codec
 
 import (
 	"io"
-	"sync"
 )
 
 type Header struct {
 	ServiceMethod string // format "Service.Method"
 	Seq           uint64 // sequence number chosen by client
 	Error         string
-}
-
-var HeaderPool = sync.Pool{
-	New: func() interface{} { return &Header{} },
 }
 
 type Codec interface {

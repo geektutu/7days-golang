@@ -94,15 +94,14 @@ type request struct {
 }
 
 func (server *Server) readRequestHeader(cc codec.Codec) (*codec.Header, error) {
-	h, _ := codec.HeaderPool.Get().(*codec.Header)
-	if err := cc.ReadHeader(h); err != nil {
-		codec.HeaderPool.Put(h)
+	var h codec.Header
+	if err := cc.ReadHeader(&h); err != nil {
 		if err != io.EOF && err != io.ErrUnexpectedEOF {
 			log.Println("rpc server: read header error:", err)
 		}
 		return nil, err
 	}
-	return h, nil
+	return &h, nil
 }
 
 func (server *Server) findService(serviceMethod string) (svc *service, mtype *methodType, err error) {
@@ -156,7 +155,6 @@ func (server *Server) sendResponse(cc codec.Codec, h *codec.Header, body interfa
 	if err := cc.Write(h, body); err != nil {
 		log.Println("rpc server: write response error:", err)
 	}
-	codec.HeaderPool.Put(h) // recycle Header object
 }
 
 func (server *Server) handleRequest(cc codec.Codec, req *request, sending *sync.Mutex, wg *sync.WaitGroup) {
