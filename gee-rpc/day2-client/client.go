@@ -34,6 +34,7 @@ func (call *Call) done() {
 // multiple goroutines simultaneously.
 type Client struct {
 	cc      codec.Codec
+	opt     *Options
 	sending sync.Mutex // protect following
 	header  codec.Header
 	mu      sync.Mutex // protect following
@@ -172,15 +173,26 @@ func (client *Client) Call(serviceMethod string, args, reply interface{}) error 
 	return call.Error
 }
 
-func NewClient(conn io.ReadWriteCloser, opt *Options) (*Client, error) {
-	var err error
-	defer func() {
-		if err != nil {
-			_ = conn.Close()
-		}
-	}()
-	if opt.MagicNumber == 0 {
-		opt.MagicNumber = MagicNumber
+func parseOptions(opts ...*Options) (*Options, error) {
+	// if opts is nil or pass nil as parameter
+	if len(opts) == 0 || opts[0] == nil {
+		return defaultOptions, nil
+	}
+	if len(opts) != 1 {
+		return nil, errors.New("number of options is more than 1")
+	}
+	opt := opts[0]
+	opt.MagicNumber = defaultOptions.MagicNumber
+	if opt.CodecType == "" {
+		opt.CodecType = defaultOptions.CodecType
+	}
+	return opt, nil
+}
+
+func NewClient(conn io.ReadWriteCloser, opts ...*Options) (*Client, error) {
+	opt, err := parseOptions(opts...)
+	if err != nil {
+		return nil, err
 	}
 	f := codec.NewCodecFuncMap[opt.CodecType]
 	if f == nil {
@@ -191,14 +203,16 @@ func NewClient(conn io.ReadWriteCloser, opt *Options) (*Client, error) {
 	// send options with server
 	if err = json.NewEncoder(conn).Encode(opt); err != nil {
 		log.Println("rpc client: options error: ", err)
+		_ = conn.Close()
 		return nil, err
 	}
-	return newClientCodec(f(conn)), nil
+	return newClientCodec(f(conn), opt), nil
 }
 
-func newClientCodec(cc codec.Codec) *Client {
+func newClientCodec(cc codec.Codec, opt *Options) *Client {
 	client := &Client{
 		cc:      cc,
+		opt:     opt,
 		pending: make(map[uint64]*Call),
 	}
 	go client.receive()
@@ -207,13 +221,9 @@ func newClientCodec(cc codec.Codec) *Client {
 
 // Dial connects to an RPC server at the specified network address
 func Dial(network, address string, opts ...*Options) (*Client, error) {
-	opt := defaultOptions
-	if len(opts) > 0 && opts[0] != nil {
-		opt = opts[0]
-	}
 	conn, err := net.Dial(network, address)
 	if err != nil {
 		return nil, err
 	}
-	return NewClient(conn, opt)
+	return NewClient(conn, opts...)
 }
