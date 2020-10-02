@@ -233,7 +233,6 @@ func DialHTTPPath(network, address, path string, opts ...*Options) (*Client, err
 	if len(opts) > 0 && opts[0] != nil {
 		opt = opts[0]
 	}
-	var err error
 	conn, err := net.Dial(network, address)
 	if err != nil {
 		return nil, err
