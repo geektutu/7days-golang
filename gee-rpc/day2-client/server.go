@@ -17,12 +17,12 @@ import (
 
 const MagicNumber = 0x3bef5c
 
-type Options struct {
+type Option struct {
 	MagicNumber int        // MagicNumber marks this's a geerpc request
 	CodecType   codec.Type // client may choose different Codec to encode body
 }
 
-var defaultOptions = &Options{
+var DefaultOption = &Option{
 	MagicNumber: MagicNumber,
 	CodecType:   codec.GobType,
 }
@@ -42,7 +42,7 @@ var DefaultServer = NewServer()
 // ServeConn blocks, serving the connection until the client hangs up.
 func (server *Server) ServeConn(conn io.ReadWriteCloser) {
 	defer func() { _ = conn.Close() }()
-	var opt Options
+	var opt Option
 	if err := json.NewDecoder(conn).Decode(&opt); err != nil {
 		log.Println("rpc server: options error: ", err)
 		return
