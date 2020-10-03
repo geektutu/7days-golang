@@ -5,6 +5,7 @@
 package geerpc
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 	"log"
 	"net"
 	"sync"
+	"time"
 )
 
 // Call represents an active RPC.
@@ -170,9 +172,15 @@ func (client *Client) Go(serviceMethod string, args, reply interface{}, done cha
 
 // Call invokes the named function, waits for it to complete,
 // and returns its error status.
-func (client *Client) Call(serviceMethod string, args, reply interface{}) error {
-	call := <-client.Go(serviceMethod, args, reply, make(chan *Call, 1)).Done
-	return call.Error
+func (client *Client) Call(ctx context.Context, serviceMethod string, args, reply interface{}) error {
+	call := client.Go(serviceMethod, args, reply, make(chan *Call, 1))
+	select {
+	case <-ctx.Done():
+		client.removeCall(call.Seq)
+		return errors.New("rpc client: call failed: " + ctx.Err().Error())
+	case call := <-call.Done:
+		return call.Error
+	}
 }
 
 func parseOptions(opts ...*Option) (*Option, error) {
@@ -226,11 +234,36 @@ func dial(network, address string, opt *Option) (*Client, error) {
 	return NewClient(conn, opt)
 }
 
+type clientResult struct {
+	client *Client
+	err    error
+}
+
+func dialTimeout(f func() (client *Client, err error), timeout time.Duration) (*Client, error) {
+	if timeout == 0 {
+		return f()
+	}
+	ch := make(chan clientResult)
+	go func() {
+		client, err := f()
+		ch <- clientResult{client: client, err: err}
+	}()
+	select {
+	case <-time.After(timeout):
+		return nil, fmt.Errorf("rpc client: dial timeout: expect within %s", timeout)
+	case result := <-ch:
+		return result.client, result.err
+	}
+}
+
 // Dial connects to an RPC server at the specified network address
 func Dial(network, address string, opts ...*Option) (*Client, error) {
 	opt, err := parseOptions(opts...)
 	if err != nil {
 		return nil, err
 	}
-	return dial(network, address, opt)
+	f := func() (client *Client, err error) {
+		return dial(network, address, opt)
+	}
+	return dialTimeout(f, opt.ConnectTimeout)
 }

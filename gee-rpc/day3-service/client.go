@@ -17,6 +17,7 @@ import (
 
 // Call represents an active RPC.
 type Call struct {
+	Seq           uint64
 	ServiceMethod string      // format "<service>.<method>"
 	Args          interface{} // arguments to the function
 	Reply         interface{} // reply from the function
@@ -34,7 +35,7 @@ func (call *Call) done() {
 // multiple goroutines simultaneously.
 type Client struct {
 	cc      codec.Codec
-	opt     *Options
+	opt     *Option
 	sending sync.Mutex // protect following
 	header  codec.Header
 	mu      sync.Mutex // protect following
@@ -96,6 +97,7 @@ func (client *Client) send(call *Call) {
 
 	// register this call.
 	seq, err := client.registerCall(call)
+	call.Seq = seq
 	if err != nil {
 		call.Error = err
 		call.done()
@@ -173,35 +175,31 @@ func (client *Client) Call(serviceMethod string, args, reply interface{}) error 
 	return call.Error
 }
 
-func parseOptions(opts ...*Options) (*Options, error) {
+func parseOptions(opts ...*Option) (*Option, error) {
 	// if opts is nil or pass nil as parameter
 	if len(opts) == 0 || opts[0] == nil {
-		return defaultOptions, nil
+		return DefaultOption, nil
 	}
 	if len(opts) != 1 {
 		return nil, errors.New("number of options is more than 1")
 	}
 	opt := opts[0]
-	opt.MagicNumber = defaultOptions.MagicNumber
+	opt.MagicNumber = DefaultOption.MagicNumber
 	if opt.CodecType == "" {
-		opt.CodecType = defaultOptions.CodecType
+		opt.CodecType = DefaultOption.CodecType
 	}
 	return opt, nil
 }
 
-func NewClient(conn io.ReadWriteCloser, opts ...*Options) (*Client, error) {
-	opt, err := parseOptions(opts...)
-	if err != nil {
-		return nil, err
-	}
+func NewClient(conn net.Conn, opt *Option) (*Client, error) {
 	f := codec.NewCodecFuncMap[opt.CodecType]
 	if f == nil {
-		err = fmt.Errorf("invalid codec type %s", opt.CodecType)
+		err := fmt.Errorf("invalid codec type %s", opt.CodecType)
 		log.Println("rpc client: codec error:", err)
 		return nil, err
 	}
 	// send options with server
-	if err = json.NewEncoder(conn).Encode(opt); err != nil {
+	if err := json.NewEncoder(conn).Encode(opt); err != nil {
 		log.Println("rpc client: options error: ", err)
 		_ = conn.Close()
 		return nil, err
@@ -209,8 +207,9 @@ func NewClient(conn io.ReadWriteCloser, opts ...*Options) (*Client, error) {
 	return newClientCodec(f(conn), opt), nil
 }
 
-func newClientCodec(cc codec.Codec, opt *Options) *Client {
+func newClientCodec(cc codec.Codec, opt *Option) *Client {
 	client := &Client{
+		seq:     1, // seq starts with 1, 0 means invalid call
 		cc:      cc,
 		opt:     opt,
 		pending: make(map[uint64]*Call),
@@ -219,11 +218,19 @@ func newClientCodec(cc codec.Codec, opt *Options) *Client {
 	return client
 }
 
-// Dial connects to an RPC server at the specified network address
-func Dial(network, address string, opts ...*Options) (*Client, error) {
+func dial(network, address string, opt *Option) (*Client, error) {
 	conn, err := net.Dial(network, address)
 	if err != nil {
 		return nil, err
 	}
-	return NewClient(conn, opts...)
+	return NewClient(conn, opt)
+}
+
+// Dial connects to an RPC server at the specified network address
+func Dial(network, address string, opts ...*Option) (*Client, error) {
+	opt, err := parseOptions(opts...)
+	if err != nil {
+		return nil, err
+	}
+	return dial(network, address, opt)
 }

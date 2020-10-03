@@ -29,11 +29,7 @@ func main() {
 	defer func() { _ = conn.Close() }()
 
 	// send options
-	_ = json.NewEncoder(conn).Encode(&geerpc.Options{
-		MagicNumber: geerpc.MagicNumber,
-		CodecType:   codec.GobType,
-	})
-
+	_ = json.NewEncoder(conn).Encode(geerpc.DefaultOption)
 	cc := codec.NewGobCodec(conn)
 	// send request & receive response
 	for i := 0; i < 5; i++ {

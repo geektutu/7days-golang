@@ -6,6 +6,7 @@ package geerpc
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,10 +16,12 @@ import (
 	"net"
 	"net/http"
 	"sync"
+	"time"
 )
 
 // Call represents an active RPC.
 type Call struct {
+	Seq           uint64
 	ServiceMethod string      // format "<service>.<method>"
 	Args          interface{} // arguments to the function
 	Reply         interface{} // reply from the function
@@ -36,7 +39,7 @@ func (call *Call) done() {
 // multiple goroutines simultaneously.
 type Client struct {
 	cc      codec.Codec
-	opt     *Options
+	opt     *Option
 	sending sync.Mutex // protect following
 	header  codec.Header
 	mu      sync.Mutex // protect following
@@ -98,6 +101,7 @@ func (client *Client) send(call *Call) {
 
 	// register this call.
 	seq, err := client.registerCall(call)
+	call.Seq = seq
 	if err != nil {
 		call.Error = err
 		call.done()
@@ -170,40 +174,42 @@ func (client *Client) Go(serviceMethod string, args, reply interface{}, done cha
 
 // Call invokes the named function, waits for it to complete,
 // and returns its error status.
-func (client *Client) Call(serviceMethod string, args, reply interface{}) error {
-	call := <-client.Go(serviceMethod, args, reply, make(chan *Call, 1)).Done
-	return call.Error
+func (client *Client) Call(ctx context.Context, serviceMethod string, args, reply interface{}) error {
+	call := client.Go(serviceMethod, args, reply, make(chan *Call, 1))
+	select {
+	case <-ctx.Done():
+		client.removeCall(call.Seq)
+		return errors.New("rpc client: call failed: " + ctx.Err().Error())
+	case call := <-call.Done:
+		return call.Error
+	}
 }
 
-func parseOptions(opts ...*Options) (*Options, error) {
+func parseOptions(opts ...*Option) (*Option, error) {
 	// if opts is nil or pass nil as parameter
 	if len(opts) == 0 || opts[0] == nil {
-		return defaultOptions, nil
+		return DefaultOption, nil
 	}
 	if len(opts) != 1 {
 		return nil, errors.New("number of options is more than 1")
 	}
 	opt := opts[0]
-	opt.MagicNumber = defaultOptions.MagicNumber
+	opt.MagicNumber = DefaultOption.MagicNumber
 	if opt.CodecType == "" {
-		opt.CodecType = defaultOptions.CodecType
+		opt.CodecType = DefaultOption.CodecType
 	}
 	return opt, nil
 }
 
-func NewClient(conn io.ReadWriteCloser, opts ...*Options) (*Client, error) {
-	opt, err := parseOptions(opts...)
-	if err != nil {
-		return nil, err
-	}
+func NewClient(conn net.Conn, opt *Option) (*Client, error) {
 	f := codec.NewCodecFuncMap[opt.CodecType]
 	if f == nil {
-		err = fmt.Errorf("invalid codec type %s", opt.CodecType)
+		err := fmt.Errorf("invalid codec type %s", opt.CodecType)
 		log.Println("rpc client: codec error:", err)
 		return nil, err
 	}
 	// send options with server
-	if err = json.NewEncoder(conn).Encode(opt); err != nil {
+	if err := json.NewEncoder(conn).Encode(opt); err != nil {
 		log.Println("rpc client: options error: ", err)
 		_ = conn.Close()
 		return nil, err
@@ -211,8 +217,9 @@ func NewClient(conn io.ReadWriteCloser, opts ...*Options) (*Client, error) {
 	return newClientCodec(f(conn), opt), nil
 }
 
-func newClientCodec(cc codec.Codec, opt *Options) *Client {
+func newClientCodec(cc codec.Codec, opt *Option) *Client {
 	client := &Client{
+		seq:     1, // seq starts with 1, 0 means invalid call
 		cc:      cc,
 		opt:     opt,
 		pending: make(map[uint64]*Call),
@@ -221,24 +228,49 @@ func newClientCodec(cc codec.Codec, opt *Options) *Client {
 	return client
 }
 
-// Dial connects to an RPC server at the specified network address
-func Dial(network, address string, opts ...*Options) (*Client, error) {
+func dial(network, address string, opt *Option) (*Client, error) {
 	conn, err := net.Dial(network, address)
 	if err != nil {
 		return nil, err
 	}
-	return NewClient(conn, opts...)
+	return NewClient(conn, opt)
 }
 
-// DialHTTP connects to an HTTP RPC server at the specified network address
-// listening on the default HTTP RPC path.
-func DialHTTP(network, address string, opts ...*Options) (*Client, error) {
-	return DialHTTPPath(network, address, defaultRPCPath, opts...)
+type clientResult struct {
+	client *Client
+	err    error
 }
 
-// DialHTTPPath connects to an HTTP RPC server
-// at the specified network address and path.
-func DialHTTPPath(network, address, path string, opts ...*Options) (*Client, error) {
+func dialTimeout(f func() (client *Client, err error), timeout time.Duration) (*Client, error) {
+	if timeout == 0 {
+		return f()
+	}
+	ch := make(chan clientResult)
+	go func() {
+		client, err := f()
+		ch <- clientResult{client: client, err: err}
+	}()
+	select {
+	case <-time.After(timeout):
+		return nil, fmt.Errorf("rpc client: dial timeout: expect within %s", timeout)
+	case result := <-ch:
+		return result.client, result.err
+	}
+}
+
+// Dial connects to an RPC server at the specified network address
+func Dial(network, address string, opts ...*Option) (*Client, error) {
+	opt, err := parseOptions(opts...)
+	if err != nil {
+		return nil, err
+	}
+	f := func() (client *Client, err error) {
+		return dial(network, address, opt)
+	}
+	return dialTimeout(f, opt.ConnectTimeout)
+}
+
+func dialHTTPPath(network, address, path string, opt *Option) (*Client, error) {
 	conn, err := net.Dial(network, address)
 	if err != nil {
 		return nil, err
@@ -249,11 +281,30 @@ func DialHTTPPath(network, address, path string, opts ...*Options) (*Client, err
 	// before switching to RPC protocol.
 	resp, err := http.ReadResponse(bufio.NewReader(conn), &http.Request{Method: "CONNECT"})
 	if err == nil && resp.Status == connected {
-		return NewClient(conn, opts...)
+		return NewClient(conn, opt)
 	}
 	if err == nil {
 		err = errors.New("unexpected HTTP response: " + resp.Status)
 	}
 	_ = conn.Close()
 	return nil, err
+}
+
+// DialHTTPPath connects to an HTTP RPC server
+// at the specified network address and path.
+func DialHTTPPath(network, address, path string, opts ...*Option) (*Client, error) {
+	opt, err := parseOptions(opts...)
+	if err != nil {
+		return nil, err
+	}
+	f := func() (*Client, error) {
+		return dialHTTPPath(network, address, path, opt)
+	}
+	return dialTimeout(f, opt.ConnectTimeout)
+}
+
+// DialHTTP connects to an HTTP RPC server at the specified network address
+// listening on the default HTTP RPC path.
+func DialHTTP(network, address string, opts ...*Option) (*Client, error) {
+	return DialHTTPPath(network, address, defaultRPCPath, opts...)
 }
