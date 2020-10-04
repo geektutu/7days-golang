@@ -26,16 +26,16 @@ func startServer(addr chan string) {
 
 func TestClient_dialTimeout(t *testing.T) {
 	t.Parallel()
-	f := func() (client *Client, err error) {
+	f := func(network, address string, opt *Option) (client *Client, err error) {
 		time.Sleep(time.Second * 2)
 		return nil, nil
 	}
 	t.Run("timeout", func(t *testing.T) {
-		_, err := dialTimeout(f, time.Second)
+		_, err := dialTimeout(f, "", "", &Option{ConnectTimeout: time.Second})
 		_assert(err != nil && strings.Contains(err.Error(), "dial timeout"), "expect a timeout error")
 	})
 	t.Run("0", func(t *testing.T) {
-		_, err := dialTimeout(f, 0)
+		_, err := dialTimeout(f, "", "", &Option{ConnectTimeout: 0})
 		_assert(err == nil, "0 means no limit")
 	})
 }
