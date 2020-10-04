@@ -15,6 +15,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -38,14 +39,15 @@ func (call *Call) done() {
 // with a single Client, and a Client may be used by
 // multiple goroutines simultaneously.
 type Client struct {
-	cc      codec.Codec
-	opt     *Option
-	sending sync.Mutex // protect following
-	header  codec.Header
-	mu      sync.Mutex // protect following
-	seq     uint64
-	pending map[uint64]*Call
-	closed  bool // user has called Close
+	cc       codec.Codec
+	opt      *Option
+	sending  sync.Mutex // protect following
+	header   codec.Header
+	mu       sync.Mutex // protect following
+	seq      uint64
+	pending  map[uint64]*Call
+	closing  bool // user has called Close
+	shutdown bool // server has told us to stop
 }
 
 var _ io.Closer = (*Client)(nil)
@@ -56,17 +58,24 @@ var ErrShutdown = errors.New("connection is shut down")
 func (client *Client) Close() error {
 	client.mu.Lock()
 	defer client.mu.Unlock()
-	if client.closed {
+	if client.closing {
 		return ErrShutdown
 	}
-	client.closed = true
+	client.closing = true
 	return client.cc.Close()
+}
+
+// IsAvailable return true if the client does work
+func (client *Client) IsAvailable() bool {
+	client.mu.Lock()
+	defer client.mu.Unlock()
+	return !client.shutdown && !client.closing
 }
 
 func (client *Client) registerCall(call *Call) (uint64, error) {
 	client.mu.Lock()
 	defer client.mu.Unlock()
-	if client.closed {
+	if client.closing || client.shutdown {
 		return 0, ErrShutdown
 	}
 	seq := client.seq
@@ -88,6 +97,7 @@ func (client *Client) terminateCalls(err error) {
 	defer client.sending.Unlock()
 	client.mu.Lock()
 	defer client.mu.Unlock()
+	client.shutdown = true
 	for _, call := range client.pending {
 		call.Error = err
 		call.done()
@@ -228,6 +238,35 @@ func newClientCodec(cc codec.Codec, opt *Option) *Client {
 	return client
 }
 
+type clientResult struct {
+	client *Client
+	err    error
+}
+
+type dialFunc func(network, address string, opt *Option) (client *Client, err error)
+
+func dialTimeout(f dialFunc, network, address string, opts ...*Option) (*Client, error) {
+	opt, err := parseOptions(opts...)
+	if err != nil {
+		return nil, err
+	}
+	ch := make(chan clientResult)
+	go func() {
+		client, err := f(network, address, opt)
+		ch <- clientResult{client: client, err: err}
+	}()
+	if opt.ConnectTimeout == 0 {
+		result := <-ch
+		return result.client, result.err
+	}
+	select {
+	case <-time.After(opt.ConnectTimeout):
+		return nil, fmt.Errorf("rpc client: dial timeout: expect within %s", opt.ConnectTimeout)
+	case result := <-ch:
+		return result.client, result.err
+	}
+}
+
 func dial(network, address string, opt *Option) (*Client, error) {
 	conn, err := net.Dial(network, address)
 	if err != nil {
@@ -236,46 +275,17 @@ func dial(network, address string, opt *Option) (*Client, error) {
 	return NewClient(conn, opt)
 }
 
-type clientResult struct {
-	client *Client
-	err    error
-}
-
-func dialTimeout(f func() (client *Client, err error), timeout time.Duration) (*Client, error) {
-	if timeout == 0 {
-		return f()
-	}
-	ch := make(chan clientResult)
-	go func() {
-		client, err := f()
-		ch <- clientResult{client: client, err: err}
-	}()
-	select {
-	case <-time.After(timeout):
-		return nil, fmt.Errorf("rpc client: dial timeout: expect within %s", timeout)
-	case result := <-ch:
-		return result.client, result.err
-	}
-}
-
 // Dial connects to an RPC server at the specified network address
 func Dial(network, address string, opts ...*Option) (*Client, error) {
-	opt, err := parseOptions(opts...)
-	if err != nil {
-		return nil, err
-	}
-	f := func() (client *Client, err error) {
-		return dial(network, address, opt)
-	}
-	return dialTimeout(f, opt.ConnectTimeout)
+	return dialTimeout(dial, network, address, opts...)
 }
 
-func dialHTTPPath(network, address, path string, opt *Option) (*Client, error) {
+func dialHTTP(network, address string, opt *Option) (*Client, error) {
 	conn, err := net.Dial(network, address)
 	if err != nil {
 		return nil, err
 	}
-	_, _ = io.WriteString(conn, fmt.Sprintf("CONNECT %s HTTP/1.0\n\n", path))
+	_, _ = io.WriteString(conn, fmt.Sprintf("CONNECT %s HTTP/1.0\n\n", defaultRPCPath))
 
 	// Require successful HTTP response
 	// before switching to RPC protocol.
@@ -290,21 +300,25 @@ func dialHTTPPath(network, address, path string, opt *Option) (*Client, error) {
 	return nil, err
 }
 
-// DialHTTPPath connects to an HTTP RPC server
-// at the specified network address and path.
-func DialHTTPPath(network, address, path string, opts ...*Option) (*Client, error) {
-	opt, err := parseOptions(opts...)
-	if err != nil {
-		return nil, err
-	}
-	f := func() (*Client, error) {
-		return dialHTTPPath(network, address, path, opt)
-	}
-	return dialTimeout(f, opt.ConnectTimeout)
-}
-
 // DialHTTP connects to an HTTP RPC server at the specified network address
 // listening on the default HTTP RPC path.
 func DialHTTP(network, address string, opts ...*Option) (*Client, error) {
-	return DialHTTPPath(network, address, defaultRPCPath, opts...)
+	return dialTimeout(dialHTTP, network, address, opts...)
+}
+
+// XDial use a general format to represent a rpc server
+// eg, http@10.0.0.1:7001, tcp@10.0.0.1:9999, unix@/tmp/geerpc.sock
+func XDial(rpcAddr string, opts ...*Option) (*Client, error) {
+	parts := strings.Split(rpcAddr, "@")
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("rpc client err: wrong format '%s', expect protocol@addr", rpcAddr)
+	}
+	protocol, addr := parts[0], parts[1]
+	switch protocol {
+	case "http":
+		return DialHTTP("tcp", addr, opts...)
+	default:
+		// tcp, unix or other transport protocol
+		return Dial(protocol, addr, opts...)
+	}
 }

@@ -34,14 +34,15 @@ func (call *Call) done() {
 // with a single Client, and a Client may be used by
 // multiple goroutines simultaneously.
 type Client struct {
-	cc      codec.Codec
-	opt     *Option
-	sending sync.Mutex // protect following
-	header  codec.Header
-	mu      sync.Mutex // protect following
-	seq     uint64
-	pending map[uint64]*Call
-	closed  bool // user has called Close
+	cc       codec.Codec
+	opt      *Option
+	sending  sync.Mutex // protect following
+	header   codec.Header
+	mu       sync.Mutex // protect following
+	seq      uint64
+	pending  map[uint64]*Call
+	closing  bool // user has called Close
+	shutdown bool // server has told us to stop
 }
 
 var _ io.Closer = (*Client)(nil)
@@ -52,17 +53,24 @@ var ErrShutdown = errors.New("connection is shut down")
 func (client *Client) Close() error {
 	client.mu.Lock()
 	defer client.mu.Unlock()
-	if client.closed {
+	if client.closing {
 		return ErrShutdown
 	}
-	client.closed = true
+	client.closing = true
 	return client.cc.Close()
+}
+
+// IsAvailable return true if the client does work
+func (client *Client) IsAvailable() bool {
+	client.mu.Lock()
+	defer client.mu.Unlock()
+	return !client.shutdown && !client.closing
 }
 
 func (client *Client) registerCall(call *Call) (uint64, error) {
 	client.mu.Lock()
 	defer client.mu.Unlock()
-	if client.closed {
+	if client.closing || client.shutdown {
 		return 0, ErrShutdown
 	}
 	seq := client.seq
@@ -84,6 +92,7 @@ func (client *Client) terminateCalls(err error) {
 	defer client.sending.Unlock()
 	client.mu.Lock()
 	defer client.mu.Unlock()
+	client.shutdown = true
 	for _, call := range client.pending {
 		call.Error = err
 		call.done()
