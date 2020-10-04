@@ -10,11 +10,12 @@ type SelectMode int
 
 const (
 	RandomSelect SelectMode = iota // select randomly
-	RobbinSelect                   // select using Robbin algorithm
+	RobbinSelect                   // select using Robbin algorithm, not implemented
 )
 
 type Discovery interface {
 	Get(mode SelectMode) string
+	All() []string
 }
 
 var _ Discovery = (*MultiServersDiscovery)(nil)
@@ -46,6 +47,15 @@ func (d *MultiServersDiscovery) Get(mode SelectMode) string {
 	default:
 		return ""
 	}
+}
+
+func (d *MultiServersDiscovery) All() []string {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
+	// return a copy of d.servers
+	servers := make([]string, len(d.servers), len(d.servers))
+	copy(servers, d.servers)
+	return servers
 }
 
 // NewMultiServerDiscovery creates a MultiServersDiscovery instance
