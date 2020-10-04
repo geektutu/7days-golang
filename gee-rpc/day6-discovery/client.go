@@ -316,9 +316,9 @@ func XDial(rpcAddr string, opts ...*Option) (*Client, error) {
 	protocol, addr := parts[0], parts[1]
 	switch protocol {
 	case "http":
-		return DialHTTP("tcp", addr)
+		return DialHTTP("tcp", addr, opts...)
 	default:
 		// tcp, unix or other transport protocol
-		return Dial(protocol, addr)
+		return Dial(protocol, addr, opts...)
 	}
 }
