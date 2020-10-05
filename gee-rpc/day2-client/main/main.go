@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"sync"
+	"time"
 )
 
 func startServer(addr chan string) {
@@ -25,6 +26,7 @@ func main() {
 	client, _ := geerpc.Dial("tcp", <-addr)
 	defer func() { _ = client.Close() }()
 
+	time.Sleep(time.Second)
 	// send request & receive response
 	var wg sync.WaitGroup
 	for i := 0; i < 5; i++ {

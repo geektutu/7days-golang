@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"sync"
+	"time"
 )
 
 type Foo int
@@ -31,6 +32,7 @@ func call(addrCh chan string) {
 	client, _ := geerpc.DialHTTP("tcp", <-addrCh)
 	defer func() { _ = client.Close() }()
 
+	time.Sleep(time.Second)
 	// send request & receive response
 	var wg sync.WaitGroup
 	for i := 0; i < 5; i++ {
