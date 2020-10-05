@@ -1,6 +1,7 @@
 package xclient
 
 import (
+	"errors"
 	"math/rand"
 	"sync"
 	"time"
@@ -14,8 +15,10 @@ const (
 )
 
 type Discovery interface {
-	Get(mode SelectMode) string
-	All() []string
+	Refresh() error // refresh from remote registry
+	Update(servers []string) error
+	Get(mode SelectMode) (string, error)
+	GetAll() ([]string, error)
 }
 
 var _ Discovery = (*MultiServersDiscovery)(nil)
@@ -29,38 +32,46 @@ type MultiServersDiscovery struct {
 	index   int // record the selected position for robin algorithm
 }
 
+// Refresh doesn't make sense for MultiServersDiscovery, so ignore it
+func (d *MultiServersDiscovery) Refresh() error {
+	return nil
+}
+
 // Update the servers of discovery dynamically if needed
-func (d *MultiServersDiscovery) Update(servers []string) {
+func (d *MultiServersDiscovery) Update(servers []string) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.servers = servers
+	return nil
 }
 
-func (d *MultiServersDiscovery) Get(mode SelectMode) string {
+// Get a server according to mode
+func (d *MultiServersDiscovery) Get(mode SelectMode) (string, error) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	if len(d.servers) == 0 {
-		return ""
+		return "", errors.New("rpc discovery: no available servers")
 	}
 	switch mode {
 	case RandomSelect:
-		return d.servers[d.r.Intn(len(d.servers))]
+		return d.servers[d.r.Intn(len(d.servers))], nil
 	case RoundRobinSelect:
 		s := d.servers[d.index]
 		d.index = (d.index + 1) % len(d.servers)
-		return s
+		return s, nil
 	default:
-		return ""
+		return "", errors.New("rpc discovery: not supported select mode")
 	}
 }
 
-func (d *MultiServersDiscovery) All() []string {
+// returns all servers in discovery
+func (d *MultiServersDiscovery) GetAll() ([]string, error) {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
 	// return a copy of d.servers
 	servers := make([]string, len(d.servers), len(d.servers))
 	copy(servers, d.servers)
-	return servers
+	return servers, nil
 }
 
 // NewMultiServerDiscovery creates a MultiServersDiscovery instance

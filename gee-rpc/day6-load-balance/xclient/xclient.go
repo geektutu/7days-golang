@@ -65,15 +65,21 @@ func (xc *XClient) call(rpcAddr string, ctx context.Context, serviceMethod strin
 // and returns its error status.
 // xc will choose a proper server.
 func (xc *XClient) Call(ctx context.Context, serviceMethod string, args, reply interface{}) error {
-	rpcAddr := xc.d.Get(xc.mode)
+	rpcAddr, err := xc.d.Get(xc.mode)
+	if err != nil {
+		return err
+	}
 	return xc.call(rpcAddr, ctx, serviceMethod, args, reply)
 }
 
 // Broadcast invokes the named function for every server registered in discovery
 func (xc *XClient) Broadcast(ctx context.Context, serviceMethod string, args, reply interface{}) error {
-	servers := xc.d.All()
+	servers, err := xc.d.GetAll()
+	if err != nil {
+		return err
+	}
 	var wg sync.WaitGroup
-	var mu sync.Mutex
+	var mu sync.Mutex // protect e and replyDone
 	var e error
 	replyDone := reply == nil // if reply is nil, don't need to set value
 	ctx, cancel := context.WithCancel(ctx)
