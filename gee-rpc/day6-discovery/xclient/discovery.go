@@ -9,8 +9,8 @@ import (
 type SelectMode int
 
 const (
-	RandomSelect SelectMode = iota // select randomly
-	RobinSelect                    // select using Robbin algorithm
+	RandomSelect     SelectMode = iota // select randomly
+	RoundRobinSelect                   // select using Robbin algorithm
 )
 
 type Discovery interface {
@@ -45,7 +45,7 @@ func (d *MultiServersDiscovery) Get(mode SelectMode) string {
 	switch mode {
 	case RandomSelect:
 		return d.servers[d.r.Intn(len(d.servers))]
-	case RobinSelect:
+	case RoundRobinSelect:
 		s := d.servers[d.index]
 		d.index = (d.index + 1) % len(d.servers)
 		return s
