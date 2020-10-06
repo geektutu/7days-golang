@@ -3,6 +3,7 @@ package registy
 import (
 	"log"
 	"net/http"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -54,6 +55,7 @@ func (r *Registry) aliveServers() []string {
 			delete(r.servers, addr)
 		}
 	}
+	sort.Strings(alive)
 	return alive
 }
 
