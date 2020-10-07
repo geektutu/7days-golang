@@ -51,6 +51,7 @@ func call(addrCh chan string) {
 }
 
 func main() {
+	log.SetFlags(0)
 	ch := make(chan string)
 	go call(ch)
 	startServer(ch)
