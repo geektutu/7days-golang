@@ -45,6 +45,7 @@ func TestClient_Call(t *testing.T) {
 	addrCh := make(chan string)
 	go startServer(addrCh)
 	addr := <-addrCh
+	time.Sleep(time.Second)
 	t.Run("client timeout", func(t *testing.T) {
 		client, _ := Dial("tcp", addr)
 		ctx, _ := context.WithTimeout(context.Background(), time.Second)
