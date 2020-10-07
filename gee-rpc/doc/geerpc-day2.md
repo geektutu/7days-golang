@@ -243,21 +243,23 @@ func parseOptions(opts ...*Option) (*Option, error) {
 	return opt, nil
 }
 
-func dial(network, address string, opt *Option) (*Client, error) {
-	conn, err := net.Dial(network, address)
-	if err != nil {
-		return nil, err
-	}
-	return NewClient(conn, opt)
-}
-
 // Dial connects to an RPC server at the specified network address
-func Dial(network, address string, opts ...*Option) (*Client, error) {
+func Dial(network, address string, opts ...*Option) (client *Client, err error) {
 	opt, err := parseOptions(opts...)
 	if err != nil {
 		return nil, err
 	}
-	return dial(network, address, opt)
+	conn, err := net.Dial(network, address)
+	if err != nil {
+		return nil, err
+	}
+	// close the connection if client is nil
+	defer func() {
+		if client == nil {
+			_ = conn.Close()
+		}
+	}()
+	return NewClient(conn, opt)
 }
 ```
 

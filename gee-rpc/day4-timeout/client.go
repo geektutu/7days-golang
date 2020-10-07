@@ -207,18 +207,17 @@ func parseOptions(opts ...*Option) (*Option, error) {
 	return opt, nil
 }
 
-func NewClient(conn net.Conn, opt *Option) (*Client, error) {
+func NewClient(conn net.Conn, opt *Option) (client *Client, err error) {
 	f := codec.NewCodecFuncMap[opt.CodecType]
 	if f == nil {
-		err := fmt.Errorf("invalid codec type %s", opt.CodecType)
+		err = fmt.Errorf("invalid codec type %s", opt.CodecType)
 		log.Println("rpc client: codec error:", err)
-		return nil, err
+		return
 	}
 	// send options with server
-	if err := json.NewEncoder(conn).Encode(opt); err != nil {
+	if err = json.NewEncoder(conn).Encode(opt); err != nil {
 		log.Println("rpc client: options error: ", err)
-		_ = conn.Close()
-		return nil, err
+		return
 	}
 	return newClientCodec(f(conn), opt), nil
 }
@@ -239,16 +238,26 @@ type clientResult struct {
 	err    error
 }
 
-type dialFunc func(network, address string, opt *Option) (client *Client, err error)
+type newClientFunc func(conn net.Conn, opt *Option) (client *Client, err error)
 
-func dialTimeout(f dialFunc, network, address string, opts ...*Option) (*Client, error) {
+func dialTimeout(f newClientFunc, network, address string, opts ...*Option) (client *Client, err error) {
 	opt, err := parseOptions(opts...)
 	if err != nil {
 		return nil, err
 	}
+	conn, err := net.Dial(network, address)
+	if err != nil {
+		return nil, err
+	}
+	// close the connection if client is nil
+	defer func() {
+		if client == nil {
+			_ = conn.Close()
+		}
+	}()
 	ch := make(chan clientResult)
 	go func() {
-		client, err := f(network, address, opt)
+		client, err := f(conn, opt)
 		ch <- clientResult{client: client, err: err}
 	}()
 	if opt.ConnectTimeout == 0 {
@@ -257,21 +266,13 @@ func dialTimeout(f dialFunc, network, address string, opts ...*Option) (*Client,
 	}
 	select {
 	case <-time.After(opt.ConnectTimeout):
-		return nil, fmt.Errorf("rpc client: dial timeout: expect within %s", opt.ConnectTimeout)
+		return nil, fmt.Errorf("rpc client: connect timeout: expect within %s", opt.ConnectTimeout)
 	case result := <-ch:
 		return result.client, result.err
 	}
 }
 
-func dial(network, address string, opt *Option) (*Client, error) {
-	conn, err := net.Dial(network, address)
-	if err != nil {
-		return nil, err
-	}
-	return NewClient(conn, opt)
-}
-
 // Dial connects to an RPC server at the specified network address
 func Dial(network, address string, opts ...*Option) (*Client, error) {
-	return dialTimeout(dial, network, address, opts...)
+	return dialTimeout(NewClient, network, address, opts...)
 }
