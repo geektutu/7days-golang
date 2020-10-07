@@ -33,6 +33,7 @@ func startServer(addr chan string) {
 }
 
 func main() {
+	log.SetFlags(0)
 	addr := make(chan string)
 	go startServer(addr)
 	client, _ := geerpc.Dial("tcp", <-addr)

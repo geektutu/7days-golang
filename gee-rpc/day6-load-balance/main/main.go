@@ -84,6 +84,7 @@ func broadcast(addr1, addr2 string) {
 }
 
 func main() {
+	log.SetFlags(0)
 	ch1 := make(chan string)
 	ch2 := make(chan string)
 	// start two servers

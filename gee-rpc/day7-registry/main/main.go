@@ -94,6 +94,7 @@ func broadcast(registry string) {
 }
 
 func main() {
+	log.SetFlags(0)
 	registryAddr := "http://localhost:9999/_geerpc_/registry"
 	var wg sync.WaitGroup
 	wg.Add(1)

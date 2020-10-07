@@ -73,10 +73,10 @@ func (client *Client) registerCall(call *Call) (uint64, error) {
 	if client.closing || client.shutdown {
 		return 0, ErrShutdown
 	}
-	seq := client.seq
-	client.pending[seq] = call
+	call.Seq = client.seq
+	client.pending[call.Seq] = call
 	client.seq++
-	return seq, nil
+	return call.Seq, nil
 }
 
 func (client *Client) removeCall(seq uint64) *Call {
@@ -106,7 +106,6 @@ func (client *Client) send(call *Call) {
 
 	// register this call.
 	seq, err := client.registerCall(call)
-	call.Seq = seq
 	if err != nil {
 		call.Error = err
 		call.done()
