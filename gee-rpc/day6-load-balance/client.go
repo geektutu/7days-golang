@@ -242,16 +242,26 @@ type clientResult struct {
 	err    error
 }
 
-type dialFunc func(network, address string, opt *Option) (client *Client, err error)
+type newClientFunc func(conn net.Conn, opt *Option) (client *Client, err error)
 
-func dialTimeout(f dialFunc, network, address string, opts ...*Option) (*Client, error) {
+func dialTimeout(f newClientFunc, network, address string, opts ...*Option) (client *Client, err error) {
 	opt, err := parseOptions(opts...)
 	if err != nil {
 		return nil, err
 	}
+	conn, err := net.Dial(network, address)
+	if err != nil {
+		return nil, err
+	}
+	// close the connection if client is nil
+	defer func() {
+		if client == nil {
+			_ = conn.Close()
+		}
+	}()
 	ch := make(chan clientResult)
 	go func() {
-		client, err := f(network, address, opt)
+		client, err := f(conn, opt)
 		ch <- clientResult{client: client, err: err}
 	}()
 	if opt.ConnectTimeout == 0 {
@@ -260,30 +270,19 @@ func dialTimeout(f dialFunc, network, address string, opts ...*Option) (*Client,
 	}
 	select {
 	case <-time.After(opt.ConnectTimeout):
-		return nil, fmt.Errorf("rpc client: dial timeout: expect within %s", opt.ConnectTimeout)
+		return nil, fmt.Errorf("rpc client: connect timeout: expect within %s", opt.ConnectTimeout)
 	case result := <-ch:
 		return result.client, result.err
 	}
 }
 
-func dial(network, address string, opt *Option) (*Client, error) {
-	conn, err := net.Dial(network, address)
-	if err != nil {
-		return nil, err
-	}
-	return NewClient(conn, opt)
-}
-
 // Dial connects to an RPC server at the specified network address
 func Dial(network, address string, opts ...*Option) (*Client, error) {
-	return dialTimeout(dial, network, address, opts...)
+	return dialTimeout(NewClient, network, address, opts...)
 }
 
-func dialHTTP(network, address string, opt *Option) (*Client, error) {
-	conn, err := net.Dial(network, address)
-	if err != nil {
-		return nil, err
-	}
+// NewHTTPClient new a Client instance via HTTP as transport protocol
+func NewHTTPClient(conn net.Conn, opt *Option) (*Client, error) {
 	_, _ = io.WriteString(conn, fmt.Sprintf("CONNECT %s HTTP/1.0\n\n", defaultRPCPath))
 
 	// Require successful HTTP response
@@ -295,14 +294,13 @@ func dialHTTP(network, address string, opt *Option) (*Client, error) {
 	if err == nil {
 		err = errors.New("unexpected HTTP response: " + resp.Status)
 	}
-	_ = conn.Close()
 	return nil, err
 }
 
 // DialHTTP connects to an HTTP RPC server at the specified network address
 // listening on the default HTTP RPC path.
 func DialHTTP(network, address string, opts ...*Option) (*Client, error) {
-	return dialTimeout(dialHTTP, network, address, opts...)
+	return dialTimeout(NewHTTPClient, network, address, opts...)
 }
 
 // XDial calls different functions to connect to a RPC server
