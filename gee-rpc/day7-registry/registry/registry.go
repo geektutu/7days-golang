@@ -1,4 +1,4 @@
-package registy
+package registry
 
 import (
 	"log"
@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-// Registry is a simple register center, provide following functions.
+// GeeRegistry is a simple register center, provide following functions.
 // add a server and receive heartbeat to keep it alive.
 // returns all alive servers and delete dead servers sync simultaneously.
-type Registry struct {
+type GeeRegistry struct {
 	timeout time.Duration
 	mu      sync.Mutex // protect following
 	servers map[string]*ServerItem
@@ -23,17 +23,22 @@ type ServerItem struct {
 	start time.Time
 }
 
+const (
+	defaultPath    = "/_geerpc_/registry"
+	defaultTimeout = time.Minute * 5
+)
+
 // New create a registry instance with timeout setting
-func New(timeout time.Duration) *Registry {
-	return &Registry{
+func New(timeout time.Duration) *GeeRegistry {
+	return &GeeRegistry{
 		servers: make(map[string]*ServerItem),
 		timeout: timeout,
 	}
 }
 
-var DefaultRegister = New(defaultTimeout)
+var DefaultGeeRegister = New(defaultTimeout)
 
-func (r *Registry) putServer(addr string) {
+func (r *GeeRegistry) putServer(addr string) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	s := r.servers[addr]
@@ -44,7 +49,7 @@ func (r *Registry) putServer(addr string) {
 	}
 }
 
-func (r *Registry) aliveServers() []string {
+func (r *GeeRegistry) aliveServers() []string {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	var alive []string
@@ -59,13 +64,8 @@ func (r *Registry) aliveServers() []string {
 	return alive
 }
 
-const (
-	defaultPath    = "/_geerpc_/registry"
-	defaultTimeout = time.Minute * 5
-)
-
 // Runs at /_geerpc_/registry
-func (r *Registry) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (r *GeeRegistry) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "GET":
 		// keep it simple, server is in req.Header
@@ -83,14 +83,14 @@ func (r *Registry) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// HandleHTTP registers an HTTP handler for Registry messages on registryPath
-func (r *Registry) HandleHTTP(registryPath string) {
+// HandleHTTP registers an HTTP handler for GeeRegistry messages on registryPath
+func (r *GeeRegistry) HandleHTTP(registryPath string) {
 	http.Handle(registryPath, r)
 	log.Println("rpc registry path:", registryPath)
 }
 
 func HandleHTTP() {
-	DefaultRegister.HandleHTTP(defaultPath)
+	DefaultGeeRegister.HandleHTTP(defaultPath)
 }
 
 // Heartbeat send a heartbeat message every once in a while
@@ -113,7 +113,7 @@ func Heartbeat(registry, addr string, duration time.Duration) {
 }
 
 func sendHeartbeat(registry, addr string) error {
-	log.Println(addr, "send heart beat to registry")
+	log.Println(addr, "send heart beat to registry", registry)
 	httpClient := &http.Client{}
 	req, _ := http.NewRequest("POST", registry, nil)
 	req.Header.Set("X-Geerpc-Server", addr)

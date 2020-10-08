@@ -2,6 +2,7 @@ package xclient
 
 import (
 	"errors"
+	"math"
 	"math/rand"
 	"sync"
 	"time"
@@ -49,15 +50,16 @@ func (d *MultiServersDiscovery) Update(servers []string) error {
 func (d *MultiServersDiscovery) Get(mode SelectMode) (string, error) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	if len(d.servers) == 0 {
+	n := len(d.servers)
+	if n == 0 {
 		return "", errors.New("rpc discovery: no available servers")
 	}
 	switch mode {
 	case RandomSelect:
-		return d.servers[d.r.Intn(len(d.servers))], nil
+		return d.servers[d.r.Intn(n)], nil
 	case RoundRobinSelect:
-		s := d.servers[d.index]
-		d.index = (d.index + 1) % len(d.servers)
+		s := d.servers[d.index%n] // servers could be updated, so mode n to ensure safety
+		d.index = (d.index + 1) % n
 		return s, nil
 	default:
 		return "", errors.New("rpc discovery: not supported select mode")
@@ -76,8 +78,10 @@ func (d *MultiServersDiscovery) GetAll() ([]string, error) {
 
 // NewMultiServerDiscovery creates a MultiServersDiscovery instance
 func NewMultiServerDiscovery(servers []string) *MultiServersDiscovery {
-	return &MultiServersDiscovery{
+	d := &MultiServersDiscovery{
 		servers: servers,
 		r:       rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
+	d.index = d.r.Intn(math.MaxInt32 - 1)
+	return d
 }

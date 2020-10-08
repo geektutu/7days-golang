@@ -17,7 +17,7 @@ github: https://github.com/geektutu/7days-golang
 
 ![golang RPC framework](geerpc/geerpc.jpg)
 
-本文是[7天用Go从零实现RPC框架GeeRPC]的第四篇。
+本文是[7天用Go从零实现RPC框架GeeRPC](https://geektutu.com/post/geerpc.html)的第四篇。
 
 - 增加连接超时的处理机制
 - 增加服务端处理超时的处理机制，代码约 100 行

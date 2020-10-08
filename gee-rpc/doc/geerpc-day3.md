@@ -18,7 +18,7 @@ github: https://github.com/geektutu/7days-golang
 
 ![golang RPC framework](geerpc/geerpc.jpg)
 
-本文是[7天用Go从零实现RPC框架GeeRPC]的第三篇。
+本文是[7天用Go从零实现RPC框架GeeRPC](https://geektutu.com/post/geerpc.html)的第三篇。
 
 - 通过反射实现服务注册功能
 - 在服务端实现服务调用，代码约 150 行

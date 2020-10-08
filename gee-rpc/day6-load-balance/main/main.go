@@ -46,7 +46,7 @@ func foo(xc *xclient.XClient, ctx context.Context, typ, serviceMethod string, ar
 	if err != nil {
 		log.Printf("%s %s error: %v", typ, serviceMethod, err)
 	} else {
-		log.Printf("%s Foo.Sum success: %d + %d = %d", typ, args.Num1, args.Num2, reply)
+		log.Printf("%s %s success: %d + %d = %d", typ, serviceMethod, args.Num1, args.Num2, reply)
 	}
 }
 
@@ -69,6 +69,7 @@ func call(addr1, addr2 string) {
 func broadcast(addr1, addr2 string) {
 	d := xclient.NewMultiServerDiscovery([]string{"tcp@" + addr1, "tcp@" + addr2})
 	xc := xclient.NewXClient(d, xclient.RandomSelect, nil)
+	defer func() { _ = xc.Close() }()
 	var wg sync.WaitGroup
 	for i := 0; i < 5; i++ {
 		wg.Add(1)
