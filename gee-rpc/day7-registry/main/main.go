@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"geerpc"
-	registy "geerpc/registry"
+	"geerpc/registry"
 	"geerpc/xclient"
 	"log"
 	"net"
@@ -29,17 +29,17 @@ func (f Foo) Sleep(args Args, reply *int) error {
 
 func startRegistry(wg *sync.WaitGroup) {
 	l, _ := net.Listen("tcp", ":9999")
-	registy.HandleHTTP()
+	registry.HandleHTTP()
 	wg.Done()
 	_ = http.Serve(l, nil)
 }
 
-func startServer(registry string, wg *sync.WaitGroup) {
+func startServer(registryAddr string, wg *sync.WaitGroup) {
 	var foo Foo
 	l, _ := net.Listen("tcp", ":0")
 	server := geerpc.NewServer()
 	_ = server.Register(&foo)
-	registy.Heartbeat(registry, "tcp@"+l.Addr().String(), 0)
+	registry.Heartbeat(registryAddr, "tcp@"+l.Addr().String(), 0)
 	wg.Done()
 	server.Accept(l)
 }
@@ -56,7 +56,7 @@ func foo(xc *xclient.XClient, ctx context.Context, typ, serviceMethod string, ar
 	if err != nil {
 		log.Printf("%s %s error: %v", typ, serviceMethod, err)
 	} else {
-		log.Printf("%s Foo.Sum success: %d + %d = %d", typ, args.Num1, args.Num2, reply)
+		log.Printf("%s %s success: %d + %d = %d", typ, serviceMethod, args.Num1, args.Num2, reply)
 	}
 }
 
@@ -79,6 +79,7 @@ func call(registry string) {
 func broadcast(registry string) {
 	d := xclient.NewGeeRegistryDiscovery(registry, 0)
 	xc := xclient.NewXClient(d, xclient.RandomSelect, nil)
+	defer func() { _ = xc.Close() }()
 	var wg sync.WaitGroup
 	for i := 0; i < 5; i++ {
 		wg.Add(1)

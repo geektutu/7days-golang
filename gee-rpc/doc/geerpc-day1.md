@@ -19,7 +19,7 @@ github: https://github.com/geektutu/7days-golang
 
 ![golang RPC framework](geerpc/geerpc.jpg)
 
-本文是[7天用Go从零实现RPC框架GeeRPC]的第一篇。
+本文是[7天用Go从零实现RPC框架GeeRPC](https://geektutu.com/post/geerpc.html)的第一篇。
 
 - 使用 `encoding/gob` 实现消息的编解码(序列化与反序列化)
 - 实现一个简易的服务端，仅接受消息，不处理，代码约 200 行
@@ -54,7 +54,7 @@ type Header struct {
 - Error 是错误信息，客户端置为空，服务端如果如果发生错误，将错误信息置于 Error 中。
 
 
-我们将和消息编解码相关的代码都防到 codec 目录中。
+我们将和消息编解码相关的代码都防到 codec 子目录中，在此之前，还需要在根目录下使用 `go mod init geerpc` 初始化项目，方便后续子 package 之间的引用。
 
 进一步，抽象出对消息体进行编解码的接口 Codec，抽象出接口是为了实现不同的 Codec 实例：
 
