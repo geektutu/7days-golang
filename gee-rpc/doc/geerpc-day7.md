@@ -1,5 +1,5 @@
 ---
-title: 动手写RPC框架 - GeeRPC第六天 服务发现与注册中心(registry)
+title: 动手写RPC框架 - GeeRPC第七天 服务发现与注册中心(registry)
 date: 2020-10-08 16:00:00
 description: 7天用 Go语言/golang 从零实现 RPC 框架 GeeRPC 教程(7 days implement golang remote procedure call framework from scratch tutorial)，动手写 RPC 框架，参照 golang 标准库 net/rpc 的实现，实现了服务端(server)、支持异步和并发的客户端(client)、消息编码与解码(message encoding and decoding)、服务注册(service register)、支持 TCP/Unix/HTTP 等多种传输协议。第七天实现了一个简单的注册中心(registry)，具备超时移除、接收心跳(heartbeat)等能力，并且实现了一个简单的服务发现(server discovery)模块。
 tags:
