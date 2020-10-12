@@ -37,12 +37,23 @@ func (schema *Schema) RecordValues(dest interface{}) []interface{} {
 	return fieldValues
 }
 
+type ITableName interface {
+	TableName() string
+}
+
 // Parse a struct to a Schema instance
 func Parse(dest interface{}, d dialect.Dialect) *Schema {
 	modelType := reflect.Indirect(reflect.ValueOf(dest)).Type()
+	var tableName string
+	t, ok := dest.(ITableName)
+	if !ok {
+		tableName = modelType.Name()
+	} else {
+		tableName = t.TableName()
+	}
 	schema := &Schema{
 		Model:    dest,
-		Name:     modelType.Name(),
+		Name:     tableName,
 		fieldMap: make(map[string]*Field),
 	}
 

@@ -33,3 +33,19 @@ func TestSchema_RecordValues(t *testing.T) {
 		t.Fatal("failed to get values")
 	}
 }
+
+type UserTest struct {
+	Name string `geeorm:"PRIMARY KEY"`
+	Age  int
+}
+
+func (u *UserTest) TableName() string {
+	return "ns_user_test"
+}
+
+func TestSchema_TableName(t *testing.T) {
+	schema := Parse(&UserTest{}, TestDial)
+	if schema.Name != "ns_user_test" || len(schema.Fields) != 2 {
+		t.Fatal("failed to parse User struct")
+	}
+}
