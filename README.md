@@ -1,5 +1,9 @@
 # 7 days golang programs from scratch
 
+[![CodeSize](https://img.shields.io/github/languages/code-size/geektutu/7days-golang)](https://github.com/geektutu/7days-golang)
+[![LICENSE](https://img.shields.io/badge/license-MIT-green)](https://mit-license.org/)
+[![HitCount](https://hits.dwyl.com/geektutu/7days-golang.svg)](http://github.com/geektutu/7days-golang)
+
 <details>
 <summary><strong>README 中文版本</strong></summary>
 <div>
