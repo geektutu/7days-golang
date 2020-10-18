@@ -1,4 +1,4 @@
-# 7 days golang apps from scratch
+# 7 days golang programs from scratch
 
 <details>
 <summary><strong>README 中文版本</strong></summary>
@@ -78,7 +78,7 @@ GeeRPC 是基于 Go 语言标准库 `net/rpc` 实现的，添加了协议交换�
 </div>
 </details>
 
-What can I write in 7 days? A gin-like web framework? A distributed cache like groupcache? Or a simple Python interpreter? Hope this repo can give you the answer.
+What can be accomplished in 7 days? A gin-like web framework? A distributed cache like groupcache? Or a simple Python interpreter? Hope this repo can give you the answer.
 
 ## Web Framework - Gee
 
