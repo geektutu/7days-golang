@@ -59,7 +59,7 @@ func TestAdd(t *testing.T) {
 	lru.Add("key", String("1"))
 	lru.Add("key", String("111"))
 
-	if lru.nbytes != int64(len("key")+len("111")) {
-		t.Fatal("expected 6 but got", lru.nbytes)
+	if lru.nBytes != int64(len("key")+len("111")) {
+		t.Fatal("expected 6 but got", lru.nBytes)
 	}
 }
