@@ -238,6 +238,9 @@ func (f GetterFunc) Get(key string) ([]byte, error) {
 
 - 定义接口 Getter 和 回调函数 `Get(key string)([]byte, error)`，参数是 key，返回值是 []byte。
 - 定义函数类型 GetterFunc，并实现 Getter 接口的 `Get` 方法。
+- 函数类型实现某一个接口，称之为接口型函数，方便使用者在调用时既能够传入函数作为参数，也能够传入实现了该接口的结构体作为参数。
+
+> 了解接口型函数的使用场景，可以参考 [Go 接口型函数的使用场景 - 7days-golang Q & A](https://geektutu.com/post/7days-golang-q1.html)
 
 我们可以写一个测试用例来保证回调函数能够正常工作。
 
