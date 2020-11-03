@@ -14,6 +14,8 @@ keywords:
 - Template
 image: post/gee-day6/html.png
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day6 模板 Template
 ---
 
 本文是 [7天用Go从零实现Web框架Gee教程系列](https://geektutu.com/post/gee.html)的第六篇。

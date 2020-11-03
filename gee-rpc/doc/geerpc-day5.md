@@ -14,6 +14,8 @@ keywords:
 - debug
 image: post/geerpc/geerpc.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day5 支持HTTP协议
 ---
 
 ![golang RPC framework](geerpc/geerpc.jpg)

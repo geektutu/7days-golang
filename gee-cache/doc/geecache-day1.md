@@ -15,6 +15,8 @@ keywords:
 - 缓存失效
 image: post/geecache-day1/lru_logo.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day1 LRU 缓存淘汰策略
 ---
 
 

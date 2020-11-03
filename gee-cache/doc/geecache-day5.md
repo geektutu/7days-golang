@@ -14,6 +14,8 @@ keywords:
 - 分布式节点
 image: post/geecache-day5/dist_nodes_logo.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day5 分布式节点
 ---
 
 ![分布式缓存节点](geecache-day5/dist_nodes.jpg)

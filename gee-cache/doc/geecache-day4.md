@@ -14,6 +14,8 @@ keywords:
 - consistent hash
 image: post/geecache-day4/hash_logo.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day4 一致性哈希
 ---
 
 ![一致性哈希 consistent hashing](geecache-day4/hash.jpg)

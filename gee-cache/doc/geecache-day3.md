@@ -14,6 +14,8 @@ keywords:
 - HTTP Server
 image: post/geecache-day3/http_logo.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day3 HTTP 服务端
 ---
 
 ![geecache http server](geecache-day3/http.jpg)
