@@ -15,6 +15,8 @@ keywords:
 - transaction
 image: post/geeorm/geeorm_sm.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day6 支持事务
 ---
 
 本文是[7天用Go从零实现ORM框架GeeORM](https://geektutu.com/post/geeorm.html)的第六篇。

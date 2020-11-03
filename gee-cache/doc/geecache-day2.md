@@ -15,6 +15,8 @@ keywords:
 - sync.Mutex
 image: post/geecache-day2/concurrent_cache_logo.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day2 单机并发缓存
 ---
 
 ![geecache concurrent cache](geecache-day2/concurrent_cache.jpg)

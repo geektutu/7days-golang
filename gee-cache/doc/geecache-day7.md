@@ -14,6 +14,8 @@ keywords:
 - 分布式节点
 image: post/geecache-day7/protobuf_logo.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day7 使用 Protobuf 通信
 ---
 
 ![geecache protobuf](geecache-day7/protobuf.jpg)

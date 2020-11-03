@@ -14,6 +14,8 @@ keywords:
 - 服务
 image: post/geerpc/geerpc.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day3 服务注册
 ---
 
 ![golang RPC framework](geerpc/geerpc.jpg)

@@ -14,6 +14,8 @@ keywords:
 - Context
 image: post/gee/gee.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day2 上下文
 ---
 
 本文是 [7天用Go从零实现Web框架Gee教程系列](https://geektutu.com/post/gee.html)的第二篇。

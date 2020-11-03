@@ -15,6 +15,8 @@ keywords:
 - sqlite3
 image: post/geeorm/geeorm_sm.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day0 序言
 ---
 
 ![golang ORM framework](geeorm/geeorm.jpg)

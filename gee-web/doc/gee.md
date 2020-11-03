@@ -14,6 +14,8 @@ keywords:
 - from scratch
 image: post/gee/gee.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day0 序言
 ---
 
 ![gee](gee/gee.jpg)

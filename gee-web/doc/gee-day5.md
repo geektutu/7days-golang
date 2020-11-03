@@ -14,6 +14,8 @@ keywords:
 - Middlewares
 image: post/gee-day5/middleware.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day5 中间件
 ---
 
 本文是 [7天用Go从零实现Web框架Gee教程系列](https://geektutu.com/post/gee.html)的第五篇。

@@ -14,6 +14,8 @@ keywords:
 - 分布式节点
 image: post/geecache-day6/singleflight_logo.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day6 防止缓存击穿
 ---
 
 ![geecache single flight](geecache-day6/singleflight.jpg)

@@ -13,6 +13,8 @@ keywords:
 - 动手写分布式缓存
 image: post/geecache/geecache_sm.jpg
 github: https://github.com/geektutu/7days-golang
+book: 七天用Go从零实现系列
+book_title: Day0 序言
 ---
 
 ![分布式缓存geecache](geecache/geecache.jpg)
