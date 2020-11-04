@@ -54,13 +54,13 @@ Go 语言广泛地应用于云计算和微服务，成熟的 RPC 框架和微服
 
 ## 4 目录
 
-- 第一天 - [服务端与消息编码](https://geektutu.com/post/geerpc-day1.html) | [Code](gee-rpc/day1-codec)
-- 第二天 - [支持并发与异步的客户端](https://geektutu.com/post/geerpc-day2.html) | [Code](gee-rpc/day2-client)
-- 第三天 - [服务注册(service register)](https://geektutu.com/post/geerpc-day3.html) | [Code](gee-rpc/day3-service )
-- 第四天 - [超时处理(timeout)](https://geektutu.com/post/geerpc-day4.html) | [Code](gee-rpc/day4-timeout )
-- 第五天 - [支持HTTP协议](https://geektutu.com/post/geerpc-day5.html) | [Code](gee-rpc/day5-http-debug)
-- 第六天 - [负载均衡(load balance)](https://geektutu.com/post/geerpc-day6.html) | [Code](gee-rpc/day6-load-balance)
-- 第七天 - [服务发现与注册中心(registry)](https://geektutu.com/post/geerpc-day7.html) | [Code](gee-rpc/day7-registry)
+- 第一天 - [服务端与消息编码](https://geektutu.com/post/geerpc-day1.html) | [Code](ghttps://github.com/geektutu/7days-golang/tree/master/ee-rpc/day1-codec)
+- 第二天 - [支持并发与异步的客户端](https://geektutu.com/post/geerpc-day2.html) | [Code](ghttps://github.com/geektutu/7days-golang/tree/master/ee-rpc/day2-client)
+- 第三天 - [服务注册(service register)](https://geektutu.com/post/geerpc-day3.html) | [Code](https://github.com/geektutu/7days-golang/tree/master/gee-rpc/day3-service )
+- 第四天 - [超时处理(timeout)](https://geektutu.com/post/geerpc-day4.html) | [Code](ghttps://github.com/geektutu/7days-golang/tree/master/ee-rpc/day4-timeout )
+- 第五天 - [支持HTTP协议](https://geektutu.com/post/geerpc-day5.html) | [Code](ghttps://github.com/geektutu/7days-golang/tree/master/ee-rpc/day5-http-debug)
+- 第六天 - [负载均衡(load balance)](https://geektutu.com/post/geerpc-day6.html) | [Code](https://github.com/geektutu/7days-golang/tree/master/gee-rpc/day6-load-balance)
+- 第七天 - [服务发现与注册中心(registry)](https://geektutu.com/post/geerpc-day7.html) | [Code](https://github.com/geektutu/7days-golang/tree/master/gee-rpc/day7-registry)
 
 ## 附 推荐阅读
 
