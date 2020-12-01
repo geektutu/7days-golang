@@ -85,7 +85,7 @@ func (xc *XClient) Broadcast(ctx context.Context, serviceMethod string, args, re
 	ctx, cancel := context.WithCancel(ctx)
 	for _, rpcAddr := range servers {
 		wg.Add(1)
-		go func() {
+		go func(rpcAddr string) {
 			defer wg.Done()
 			var clonedReply interface{}
 			if reply != nil {
@@ -102,7 +102,7 @@ func (xc *XClient) Broadcast(ctx context.Context, serviceMethod string, args, re
 				replyDone = true
 			}
 			mu.Unlock()
-		}()
+		}(rpcAddr)
 	}
 	wg.Wait()
 	return e
