@@ -15,7 +15,7 @@
 
 推荐 **[Go 语言笔试面试题](https://geektutu.com/post/qa-golang.html)**，加深对 Go 语言的理解。
 
-推荐 **[Go 语言高性能编程](https://geektutu.com/post/high-performance-go.html)**，写出高性能的 Go 代码。
+推荐 **[Go 语言高性能编程](https://geektutu.com/post/high-performance-go.html)**([项目地址](https://github.com/geektutu/high-performance-go))，写出高性能的 Go 代码。
 
 期待关注我的「[知乎专栏](https://zhuanlan.zhihu.com/geekgo)」和「[微博](http://weibo.com/geektutu)」，查看最近的文章和动态。
 
