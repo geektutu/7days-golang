@@ -200,4 +200,4 @@ Collections.sort(list, (Integer o1, Integer o2) -> o2 - o1 );
 ## 附 参考
 
 - [7days-golang 有价值的问题讨论汇总贴](https://github.com/geektutu/7days-golang/issues/24)
-- [GeeCache第二天 单机并发缓存 - Github 评论区](https://github.com/geektutu/geektutu-blog/issues/64)
+- [GeeCache第二天 单机并发缓存 - Github 评论区](https://github.com/geektutu/blog/issues/64)
