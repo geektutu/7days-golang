@@ -56,7 +56,7 @@ type Header struct {
 - Error 是错误信息，客户端置为空，服务端如果如果发生错误，将错误信息置于 Error 中。
 
 
-我们将和消息编解码相关的代码都防到 codec 子目录中，在此之前，还需要在根目录下使用 `go mod init geerpc` 初始化项目，方便后续子 package 之间的引用。
+我们将和消息编解码相关的代码都放到 codec 子目录中，在此之前，还需要在根目录下使用 `go mod init geerpc` 初始化项目，方便后续子 package 之间的引用。
 
 进一步，抽象出对消息体进行编解码的接口 Codec，抽象出接口是为了实现不同的 Codec 实例：
 
