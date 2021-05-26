@@ -9,7 +9,10 @@ import (
 func newTestRouter() *router {
 	r := newRouter()
 	r.addRoute("GET", "/", nil)
+	r.addRoute("GET", "/hello/before", nil)
 	r.addRoute("GET", "/hello/:name", nil)
+	r.addRoute("GET", "/hello/after", nil)
+	r.addRoute("GET", "/hello/:name/cool", nil)
 	r.addRoute("GET", "/hello/b/c", nil)
 	r.addRoute("GET", "/hi/:name", nil)
 	r.addRoute("GET", "/assets/*filepath", nil)
@@ -27,7 +30,19 @@ func TestParsePattern(t *testing.T) {
 
 func TestGetRoute(t *testing.T) {
 	r := newTestRouter()
-	n, ps := r.getRoute("GET", "/hello/geektutu")
+	n, ps := r.getRoute("GET", "/hello/before")
+	if n == nil {
+		t.Fatal("nil shouldn't be returned")
+	}
+	if n.pattern != "/hello/before" {
+		t.Fatal("should match /hello/before")
+	}
+	if len(ps) != 0 {
+		t.Fatal("params should have nothing")
+	}
+	fmt.Printf("matched path: %s, params: %q\n", n.pattern, ps)
+
+	n, ps = r.getRoute("GET", "/hello/geektutu")
 
 	if n == nil {
 		t.Fatal("nil shouldn't be returned")
@@ -43,6 +58,32 @@ func TestGetRoute(t *testing.T) {
 
 	fmt.Printf("matched path: %s, params['name']: %s\n", n.pattern, ps["name"])
 
+	n, ps = r.getRoute("GET", "/hello/after")
+	if n == nil {
+		t.Fatal("nil shouldn't be returned")
+	}
+	if n.pattern != "/hello/after" {
+		t.Fatal("should match /hello/after")
+	}
+
+	if len(ps) != 0 {
+		t.Fatal("params should have nothing")
+	}
+
+	fmt.Printf("matched path: %s, params: %q\n", n.pattern, ps)
+
+	n, ps = r.getRoute("GET", "/hello/after/cool")
+	if n == nil {
+		t.Fatal("nil shouldn't be returned")
+	}
+	if n.pattern != "/hello/:name/cool" {
+		t.Fatal("should match /hello/:name/cool")
+	}
+
+	if ps["name"] != "after" {
+		t.Fatal("name should be equal to 'after'")
+	}
+	fmt.Printf("matched path: %s, params['name']: %s\n", n.pattern, ps["name"])
 }
 
 func TestGetRoute2(t *testing.T) {
@@ -68,7 +109,7 @@ func TestGetRoutes(t *testing.T) {
 		fmt.Println(i+1, n)
 	}
 
-	if len(nodes) != 5 {
-		t.Fatal("the number of routes shoule be 4")
+	if len(nodes) != 8 {
+		t.Fatal("the number of routes shoule be 8")
 	}
 }

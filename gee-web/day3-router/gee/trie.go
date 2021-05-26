@@ -24,9 +24,13 @@ func (n *node) insert(pattern string, parts []string, height int) {
 
 	part := parts[height]
 	child := n.matchChild(part)
-	if child == nil {
+	if child == nil || (child.isWild && (part[0] != ':' && part[0] != '*')) {
 		child = &node{part: part, isWild: part[0] == ':' || part[0] == '*'}
-		n.children = append(n.children, child)
+		if child.isWild {
+			n.children = append(n.children, child)
+		} else {
+			n.children = append([]*node{child}, n.children...)
+		}
 	}
 	child.insert(pattern, parts, height+1)
 }
