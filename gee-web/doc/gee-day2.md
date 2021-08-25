@@ -75,7 +75,7 @@ w.Header().Set("Content-Type", "application/json")
 w.WriteHeader(http.StatusOK)
 encoder := json.NewEncoder(w)
 if err := encoder.Encode(obj); err != nil {
-    http.Error(w, err.Error(), 500)
+    http.Error(w, err.Error(), http.StatusInternalServerError)
 }
 ```
 
@@ -146,7 +146,7 @@ func (c *Context) JSON(code int, obj interface{}) {
 	c.Status(code)
 	encoder := json.NewEncoder(c.Writer)
 	if err := encoder.Encode(obj); err != nil {
-		http.Error(c.Writer, err.Error(), 500)
+		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 	}
 }
 
