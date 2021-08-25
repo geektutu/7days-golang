@@ -31,5 +31,4 @@ func (s *Session) CallMethod(method string, value interface{}) {
 			}
 		}
 	}
-	return
 }
