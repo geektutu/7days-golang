@@ -81,7 +81,7 @@ func (c *Context) JSON(code int, obj interface{}) {
 	c.Status(code)
 	encoder := json.NewEncoder(c.Writer)
 	if err := encoder.Encode(obj); err != nil {
-		http.Error(c.Writer, err.Error(), 500)
+		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 	}
 }
 
@@ -96,6 +96,6 @@ func (c *Context) HTML(code int, name string, data interface{}) {
 	c.SetHeader("Content-Type", "text/html")
 	c.Status(code)
 	if err := c.engine.htmlTemplates.ExecuteTemplate(c.Writer, name, data); err != nil {
-		c.Fail(500, err.Error())
+		c.Fail(http.StatusInternalServerError, err.Error())
 	}
 }
