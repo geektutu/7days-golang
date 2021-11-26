@@ -263,7 +263,7 @@ func startAPIServer(apiAddr string, gee *geecache.Group) {
 			w.Write(view.ByteSlice())
 
 		}))
-	log.Println("fontend server is running at", apiAddr)
+	log.Println("frontend server is running at", apiAddr)
 	log.Fatal(http.ListenAndServe(apiAddr[7:], nil))
 
 }
@@ -328,7 +328,7 @@ $ ./run.sh
 2020/02/16 21:17:43 geecache is running at http://localhost:8001
 2020/02/16 21:17:43 geecache is running at http://localhost:8002
 2020/02/16 21:17:43 geecache is running at http://localhost:8003
-2020/02/16 21:17:43 fontend server is running at http://localhost:9999
+2020/02/16 21:17:43 frontend server is running at http://localhost:9999
 >>> start test
 2020/02/16 21:17:45 [Server http://localhost:8003] Pick peer http://localhost:8001
 2020/02/16 21:17:45 [Server http://localhost:8003] Pick peer http://localhost:8001
