@@ -58,5 +58,8 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Write(view.ByteSlice())
+	_, err = w.Write(view.ByteSlice())
+	if err != nil {
+		return
+	}
 }
