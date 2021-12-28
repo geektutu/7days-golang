@@ -75,7 +75,7 @@ HTTP/1.0 200 Connected to Gee RPC
 ```go
 const (
 	connected        = "200 Connected to Gee RPC"
-	defaultRPCPath   = "/_geeprc_"
+	defaultRPCPath   = "/_geerpc_"
 	defaultDebugPath = "/debug/geerpc"
 )
 
@@ -120,7 +120,7 @@ package http
 func Handle(pattern string, handler Handler) { DefaultServeMux.Handle(pattern, handler) }
 ```
 
-第一个参数是支持通配的字符串 pattern，在这里，我们固定传入 `/_geeprc_`，第二个参数是 Handler 类型，Handler 是一个接口类型，定义如下：
+第一个参数是支持通配的字符串 pattern，在这里，我们固定传入 `/_geerpc_`，第二个参数是 Handler 类型，Handler 是一个接口类型，定义如下：
 
 ```go
 type Handler interface {
