@@ -23,16 +23,14 @@ func trace(message string) string {
 	return str.String()
 }
 
-func Recovery() HandlerFunc {
-	return func(c *Context) {
-		defer func() {
-			if err := recover(); err != nil {
-				message := fmt.Sprintf("%s", err)
-				log.Printf("%s\n\n", trace(message))
-				c.Fail(http.StatusInternalServerError, "Internal Server Error")
-			}
-		}()
+func Recovery(c *Context) {
+	defer func() {
+		if err := recover(); err != nil {
+			message := fmt.Sprintf("%s", err)
+			log.Printf("%s\n\n", trace(message))
+			c.Fail(http.StatusInternalServerError, "Internal Server Error")
+		}
+	}()
 
-		c.Next()
-	}
+	c.Next()
 }
