@@ -19,10 +19,11 @@ const (
 // HTTPPool implements PeerPicker for a pool of HTTP peers.
 type HTTPPool struct {
 	// this peer's base URL, e.g. "https://example.net:8000"
-	self        string
-	basePath    string
-	mu          sync.Mutex // guards peers and httpGetters
-	peers       *consistenthash.Map
+	self     string
+	basePath string
+	mu       sync.Mutex // guards peers and httpGetters
+	peers    *consistenthash.Map
+	// 每一个远程节点对应一个 httpGetter，因为 httpGetter 与远程节点的地址 baseURL 有关。
 	httpGetters map[string]*httpGetter // keyed by e.g. "http://10.0.0.2:8008"
 }
 
@@ -72,6 +73,7 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // Set updates the pool's list of peers.
+// 实例化了一致性哈希算法，并且添加了传入的节点。
 func (p *HTTPPool) Set(peers ...string) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -84,6 +86,7 @@ func (p *HTTPPool) Set(peers ...string) {
 }
 
 // PickPeer picks a peer according to key
+// 包装了一致性哈希算法的 Get() 方法，根据具体的 key，选择节点，返回节点对应的 HTTP 客户端。
 func (p *HTTPPool) PickPeer(key string) (PeerGetter, bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()

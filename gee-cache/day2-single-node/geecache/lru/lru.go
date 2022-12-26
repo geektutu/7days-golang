@@ -2,7 +2,7 @@ package lru
 
 import "container/list"
 
-// Cache is a LRU cache. It is not safe for concurrent access.
+// Cache is an LRU cache. It is not safe for concurrent access.
 type Cache struct {
 	maxBytes int64
 	nbytes   int64

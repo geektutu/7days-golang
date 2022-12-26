@@ -72,6 +72,7 @@ func (g *Group) Get(key string) (ByteView, error) {
 }
 
 // RegisterPeers registers a PeerPicker for choosing remote peer
+// 将实现了 PeerPicker 接口的 HTTPPool 注入到 Group 中。
 func (g *Group) RegisterPeers(peers PeerPicker) {
 	if g.peers != nil {
 		panic("RegisterPeerPicker called more than once")
@@ -107,6 +108,7 @@ func (g *Group) getLocally(key string) (ByteView, error) {
 	return value, nil
 }
 
+// 使用实现了 PeerGetter 接口的 httpGetter 从访问远程节点，获取缓存值。
 func (g *Group) getFromPeer(peer PeerGetter, key string) (ByteView, error) {
 	bytes, err := peer.Get(g.name, key)
 	if err != nil {

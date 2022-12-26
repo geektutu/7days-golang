@@ -19,6 +19,8 @@ type Getter interface {
 }
 
 // A GetterFunc implements Getter with a function.
+// Why does "GetterFunc implements Getter"? Getter is by definition something that can call Get().
+// Another possible implementations of Getter: a struct with Get(). See https://geektutu.com/post/7days-golang-q1.html
 type GetterFunc func(key string) ([]byte, error)
 
 // Get implements Getter interface function

@@ -7,6 +7,7 @@ type PeerPicker interface {
 }
 
 // PeerGetter is the interface that must be implemented by a peer.
+// PeerGetter 对应于 HTTP 客户端。
 type PeerGetter interface {
 	Get(group string, key string) ([]byte, error)
 }
