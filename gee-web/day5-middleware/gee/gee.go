@@ -75,7 +75,8 @@ func (engine *Engine) Run(addr string) (err error) {
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	var middlewares []HandlerFunc
 	for _, group := range engine.groups {
-		if strings.HasPrefix(req.URL.Path, group.prefix) {
+		groupPrefix := group.prefix + "/"
+		if strings.HasPrefix(req.URL.Path, groupPrefix) {
 			middlewares = append(middlewares, group.middlewares...)
 		}
 	}
