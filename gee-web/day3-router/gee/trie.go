@@ -21,12 +21,14 @@ func (n *node) insert(pattern string, parts []string, height int) {
 		n.pattern = pattern
 		return
 	}
-
 	part := parts[height]
-	child := n.matchChild(part)
-	if child == nil {
+	children := n.matchChildren(part)
+	var child *node
+	if len(children) == 0 {
 		child = &node{part: part, isWild: part[0] == ':' || part[0] == '*'}
 		n.children = append(n.children, child)
+	} else {
+		child = children[0] // 假设我们总是取第一个匹配的子节点
 	}
 	child.insert(pattern, parts, height+1)
 }
