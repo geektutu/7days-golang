@@ -10,15 +10,30 @@ import (
 
 // print stack trace for debug
 func trace(message string) string {
+	// Allocate an array to store program counters
 	var pcs [32]uintptr
-	n := runtime.Callers(3, pcs[:]) // skip first 3 caller
+	// Get call stack info, skip first 3 callers
+	n := runtime.Callers(3, pcs[:])
 
 	var str strings.Builder
 	str.WriteString(message + "\nTraceback:")
-	for _, pc := range pcs[:n] {
-		fn := runtime.FuncForPC(pc)
-		file, line := fn.FileLine(pc)
-		str.WriteString(fmt.Sprintf("\n\t%s:%d", file, line))
+
+	// Create Frames object
+	frames := runtime.CallersFrames(pcs[:n])
+	for {
+		// Get one frame per iteration
+		frame, more := frames.Next()
+
+		// Add file, line number and function name
+		str.WriteString(fmt.Sprintf("\n\t%s:%d - %s",
+			frame.File,
+			frame.Line,
+			frame.Function,
+		))
+
+		if !more {
+			break
+		}
 	}
 	return str.String()
 }
