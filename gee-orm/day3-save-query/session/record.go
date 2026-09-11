@@ -7,10 +7,20 @@ import (
 
 // Insert one or more records in database
 func (s *Session) Insert(values ...interface{}) (int64, error) {
+	if len(values) < 1 {
+		panic("There is no value to insert")
+	}
 	recordValues := make([]interface{}, 0)
+
+	baseValue := values[0]
+	table := s.Model(baseValue).RefTable()
+	baseType := reflect.TypeOf(baseValue)
+	s.clause.Set(clause.INSERT, table.Name, table.FieldNames)
+
 	for _, value := range values {
-		table := s.Model(value).RefTable()
-		s.clause.Set(clause.INSERT, table.Name, table.FieldNames)
+		if reflect.TypeOf(value) != baseType {
+			panic("All insert values must be the same type")
+		}
 		recordValues = append(recordValues, table.RecordValues(value))
 	}
 
