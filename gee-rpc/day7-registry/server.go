@@ -230,7 +230,7 @@ func Register(rcvr interface{}) error { return DefaultServer.Register(rcvr) }
 
 const (
 	connected        = "200 Connected to Gee RPC"
-	defaultRPCPath   = "/_geeprc_"
+	defaultRPCPath   = "/_geerpc_"
 	defaultDebugPath = "/debug/geerpc"
 )
 
