@@ -56,8 +56,9 @@ func (c *Context) JSON(code int, obj interface{}) {
 	c.Status(code)
 	encoder := json.NewEncoder(c.Writer)
 	if err := encoder.Encode(obj); err != nil {
-		http.Error(c.Writer, err.Error(), 500)
+		panic(err)
 	}
+	return
 }
 
 func (c *Context) Data(code int, data []byte) {
