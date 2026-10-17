@@ -40,9 +40,9 @@ func (n *node) search(parts []string, height int) *node {
 	}
 
 	part := parts[height]
-	children := n.matchChildren(part)
+	child := n.matchChildren(part)
 
-	for _, child := range children {
+	if child != nil {
 		result := child.search(parts, height+1)
 		if result != nil {
 			return result
@@ -61,21 +61,26 @@ func (n *node) travel(list *([]*node)) {
 	}
 }
 
+// Find a matching child node
 func (n *node) matchChild(part string) *node {
 	for _, child := range n.children {
-		if child.part == part || child.isWild {
+		if child.part == part {
 			return child
 		}
 	}
 	return nil
 }
 
-func (n *node) matchChildren(part string) []*node {
-	nodes := make([]*node, 0)
+// Find all eligible child nodes
+func (n *node) matchChildren(part string) *node {
+	//var nodeMatch *node
+	var nodeWild *node
 	for _, child := range n.children {
-		if child.part == part || child.isWild {
-			nodes = append(nodes, child)
+		if child.part == part {
+			return child
+		} else if child.isWild {
+			nodeWild = child
 		}
 	}
-	return nodes
+	return nodeWild
 }

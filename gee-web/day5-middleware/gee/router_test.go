@@ -9,8 +9,10 @@ import (
 func newTestRouter() *router {
 	r := newRouter()
 	r.addRoute("GET", "/", nil)
+	r.addRoute("GET", "/hello/bc", nil)
 	r.addRoute("GET", "/hello/:name", nil)
 	r.addRoute("GET", "/hello/b/c", nil)
+	r.addRoute("GET", "/hello/bcb", nil)
 	r.addRoute("GET", "/hi/:name", nil)
 	r.addRoute("GET", "/assets/*filepath", nil)
 	return r
@@ -27,7 +29,28 @@ func TestParsePattern(t *testing.T) {
 
 func TestGetRoute(t *testing.T) {
 	r := newTestRouter()
-	n, ps := r.getRoute("GET", "/hello/geektutu")
+
+	n, ps := r.getRoute("GET", "/hello/bcb")
+	if n == nil || n.part != "bcb" || len(ps) > 0 {
+		t.Fatal("nil shouldn't be returned")
+	}
+
+	n, ps = r.getRoute("GET", "/hello/bc")
+	if n == nil || n.part != "bc" || len(ps) > 0 {
+		t.Fatal("nil shouldn't be returned")
+	}
+
+	n, ps = r.getRoute("GET", "/hello/b/c")
+	if n == nil || n.part != "c" || len(ps) > 0 {
+		t.Fatal("nil shouldn't be returned")
+	}
+
+	n, ps = r.getRoute("GET", "/hello/bvv/c")
+	if n != nil {
+		t.Fatal("nil shouldn't be returned")
+	}
+
+	n, ps = r.getRoute("GET", "/hello/geektutu")
 
 	if n == nil {
 		t.Fatal("nil shouldn't be returned")
